@@ -7,11 +7,25 @@
 
 # Terminate on error
 set -e
-
+alpine_version=3.18.3
 # Prepare variables for later use
 images=()
 # The image will be pushed to GitHub container registry
 repobase="${REPOBASE:-ghcr.io/nethserver}"
+
+#Create webtop-webapp container
+reponame="imapsync-binary"
+container=$(buildah from docker.io/library/alpine:${alpine_version})
+buildah run "${container}" /bin/sh <<'EOF'
+set -e
+apk add --no-cache imapsync
+EOF
+# Commit the image
+buildah commit --rm "${container}" "${repobase}/${reponame}"
+
+# Append the image URL to the images array
+images+=("${repobase}/${reponame}")
+
 # Configure the image name
 reponame="imapsync"
 
@@ -36,10 +50,9 @@ buildah add "${container}" imageroot /imageroot
 buildah add "${container}" ui/dist /ui
 # Setup the entrypoint, ask to reserve one TCP port with the label and set a rootless container
 buildah config --entrypoint=/ \
-    --label="org.nethserver.authorizations=traefik@node:routeadm" \
-    --label="org.nethserver.tcp-ports-demand=1" \
+    --label="org.nethserver.authorizations=mail@any:mailadm" \
     --label="org.nethserver.rootfull=0" \
-    --label="org.nethserver.images=docker.io/jmalloc/echo-server:latest" \
+    --label="org.nethserver.images=${repobase}/imapsync-binary:${IMAGETAG:-latest}" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"
