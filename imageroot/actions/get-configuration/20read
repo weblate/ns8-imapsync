@@ -5,10 +5,35 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-import json
+#
+# Read configuration
+#
+
+import os
 import sys
+import json
 import agent
 
+# Prepare return variable
 config = {}
 
+rdb = agent.redis_connect() # full read-only access on every key
+
+config["mail_server"] = os.getenv("MAIL_SERVER", "") # the value is the Mail module UUID!
+
+modules=[]
+tmp = []
+# we query about all mail server to use it inside the user interface
+for key in agent.list_service_providers(rdb,'imap','tcp'):
+    obj = {
+        "name": key['module_id'],
+        "label": f"{key['module_id']} ({key['mail_hostname']})",
+        "value": key['module_uuid'],
+    }
+    modules.append(obj)
+
+# use it inside a dropdown
+config['mail_server_URL'] = modules
+
+# Dump the configuration to stdout
 json.dump(config, fp=sys.stdout)
