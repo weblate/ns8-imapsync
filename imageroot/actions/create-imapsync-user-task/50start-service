@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Configure traefik route for sftpgo webui
+
+import os
+import sys
+import json
+import agent
+
+data = json.load(sys.stdin)
+
+local_user = os.environ["local_user"]
+agent.run_helper("systemctl", "--user", "restart", "imapsync@"+local_user).check_returncode()

@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Configure traefik route for sftpgo webui
+
+import os
+import sys
+import json
+
+data = json.load(sys.stdin)
+local_user = data["local_user"]
+remote_hostname = data["remote_hostname"]
+remote_port = data["remote_port"]
+security = data.get("security",'')
+delete = data.get("delete",'')
+delete_folder = data.get("delete_folder",'')
+exclude = data.get("exclude",'')
+remote_username = data["remote_username"]
+remote_password = data["remote_password"]
+
+user_env = f"""
+LOCALUSER={local_user}
+REMOTEUSERNAME={remote_username}
+REMOTEHOSTNAME={remote_hostname}
+REMOTEPORT={remote_port}
+SECURITY={security}
+DELETE={delete}
+DELETEFOLDER={delete_folder}
+EXCLUDE={exclude}
+"""
+f = open("./imapsync/"+local_user+".env", "w", encoding="utf-8")
+f.write(user_env)
+f.close()
+
+f = open("./imapsync/"+local_user+".pwd", "w", encoding="utf-8")
+f.write(remote_password)
+f.close()
+
+os.chmod("./imapsync/"+local_user+".pwd", 0o600)
