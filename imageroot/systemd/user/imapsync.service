@@ -16,16 +16,16 @@ EnvironmentFile=%S/state/environment
 WorkingDirectory=%S/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/imapsync.pid %t/imapsync.ctr-id
-ExecStartPre=-runagent discover-smarthost
+ExecStartPre=mkdir -vp %S/state/imapsync
+ExecStartPre=runagent reveal-vmail-secret
 ExecStart=/usr/bin/podman run \
     --detach \
     --conmon-pidfile=%t/imapsync.pid \
     --cidfile=%t/imapsync.ctr-id \
     --cgroups=no-conmon \
     --replace --name=%N \
-    --publish=127.0.0.1:${TCP_PORT}:8080 \
-    --env-file=smarthost.env
-    ${ECHO_SERVER_IMAGE}
+    --volume ./imapsync:/etc/imapsync:z \
+    ${IMAPSYNC_BINARY_IMAGE} /usr/sbin/crond -f -l 8
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/imapsync.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/imapsync.ctr-id
 PIDFile=%t/imapsync.pid

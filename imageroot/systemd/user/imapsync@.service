@@ -1,0 +1,25 @@
+[Unit]
+Description=imapsync for %i
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+EnvironmentFile=%S/state/imapsync/%i.env
+WorkingDirectory=%S/state/imapsync
+ExecStartPre=/usr/bin/mkdir -p %S/state/imapsync
+#Restart=always
+#ExecStartPre=/bin/rm -f %t/dovecot.pid %t/dovecot.ctr-id
+#ExecStartPre=-runagent install-certificate dovecot
+#ExecStartPre=runagent discover-services
+ExecStart=/usr/bin/podman run \
+    --rm --name=%N \
+    ${MAIL_DOVECOT_IMAGE} \
+    /usr/bin/imapsync --noauthmd5 --noreleasecheck --allowsizemismatch \
+        --skipsize --nofoldersizes ${DELETE} ${DELETEFOLDERS} --fast --fastio1 --fastio2 --buffersize 8192000 \
+        --host2 localhost --port2 143 --tls2 --user2 ${LOCALUSER}*vmail \
+        --passfile2 vmail.pwd \
+        --host1 ${REMOTEHOSTNAME} --port1 ${REMOTEPORT} ${SECURITY} --user1 ${REMOTEUSERNAME} \
+        --passfile1 %i.pwd \
+        --exclude '^Public|^Shared${EXCLUDE}'
+
+Type=simple
+SyslogIdentifier=%N
