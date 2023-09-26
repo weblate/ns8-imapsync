@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Configure traefik route for sftpgo webui
+
+import sys
+import json
+import glob
+import os
+
+data = json.load(sys.stdin)
+local_user = data["local_user"]
+
+for file in glob.iglob("imapsync/"+local_user+".*"):
+    os.remove(file)
