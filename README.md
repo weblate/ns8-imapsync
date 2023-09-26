@@ -50,7 +50,7 @@ Launch `configure-module`, by setting the following parameters:
 
 Example:
 
-    api-cli run module/imapsync1/configure-module --data '{}'
+    api-cli run module/imapsync1/configure-module --data '{"mail_server":"8dd3b3fe-609c-42f7-a2d1-cecba9461bea"}'
 
 The above command will:
 - start and configure the imapsync instance
