@@ -28,7 +28,7 @@ for key in agent.list_service_providers(rdb,'imap','tcp'):
     obj = {
         "name": key['module_id'],
         "label": f"{key['module_id']} ({key['mail_hostname']})",
-        "value": key['module_uuid'],
+        "value": key['module_uuid']+','+key['mail_hostname'],
     }
     modules.append(obj)
 
