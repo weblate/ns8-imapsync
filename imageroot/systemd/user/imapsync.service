@@ -17,13 +17,14 @@ WorkingDirectory=%S/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/imapsync.pid %t/imapsync.ctr-id
 ExecStartPre=mkdir -vp %S/state/imapsync
-ExecStartPre=runagent reveal-vmail-secret
+ExecStartPre=runagent reveal-master-secret
 ExecStart=/usr/bin/podman run \
     --detach \
     --conmon-pidfile=%t/imapsync.pid \
     --cidfile=%t/imapsync.ctr-id \
     --cgroups=no-conmon \
     --replace --name=%N \
+    --env MAIL_HOSTNAME=${MAIL_HOSTNAME} \
     --volume ./imapsync:/etc/imapsync:z \
     ${IMAPSYNC_BINARY_IMAGE} /usr/sbin/crond -f -l 8
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/imapsync.ctr-id -t 10
