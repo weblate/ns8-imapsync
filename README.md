@@ -52,8 +52,8 @@ Example:
 
     api-cli run module/imapsync1/configure-module --data '{
         "mail_server":"8dd3b3fe-609c-42f7-a2d1-cecba9461bea",
-        "mail_hostname":foo.domain.com"
-        }'
+        "mail_hostname":"foo.domain.com"
+    }'
 
 The above command will:
 - start and configure the imapsync instance
@@ -63,6 +63,36 @@ The above command will:
 Send a test HTTP request to the imapsync backend service:
 
     curl http://127.0.0.1/imapsync/
+
+## start to sync a remote imap account to local user account
+
+security : tls|ssl|""
+trash_sync: enabled|disabled
+exclude: folder1,folder2,folder3
+
+Example:
+
+
+api-cli run module/imapsync1/create-imapsync-user-task --data '{
+    "local_user":"administrator",
+    "remote_hostname":"imap.foo.com",
+    "remote_port":"143",
+    "security":"tls",
+    "delete":"enabled",
+    "trash_sync":"disabled",
+    "exclude":"folder1,folder2",
+    "remote_username":"username",
+    "remote_password":"password"
+}'
+
+
+## delete env and stop a running synchronisation
+
+Example
+api-cli run module/imapsync1/delete-imapsync-user-task --data '{
+    "local_user":"administrator"
+}'
+
 
 ## Smarthost setting discovery
 
