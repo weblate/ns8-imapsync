@@ -12,15 +12,40 @@ import sys
 import json
 
 data = json.load(sys.stdin)
+# Local user to sync on
 local_user = data["local_user"]
+# remote credentials
 remote_hostname = data["remote_hostname"]
 remote_port = data["remote_port"]
-security = data.get("security",'')
-delete = data.get("delete",'')
-delete_folder = data.get("delete_folder",'')
-exclude = data.get("exclude",'')
 remote_username = data["remote_username"]
 remote_password = data["remote_password"]
+
+# security encryption tls,ssl,""
+security = data.get("security",'')
+if security == "tls":
+    security = "--tls1"
+elif security == "ssl":
+    security = "--ssl1"
+else:
+    security = ""
+
+# delete on local host folder/emails not on remote
+delete = data.get("delete",'')
+if delete == "enabled":
+    delete = "--delete2"
+    delete_folder = "--delete2foders"
+else:
+    delete = ""
+    delete_folder = ""
+
+# exclude file if string,string2 or trash_sync == disabled
+exclude = data.get("exclude",'')
+trash_sync= data.get("trash_sync",'disabled')
+exclude = exclude.split(',')
+if exclude != "":
+    exclude = '|'+'|'.join(exclude)
+if trash_sync ==  "disabled":
+    exclude = exclude + '|^Trash|^Deleted Items' 
 
 user_env = f"""
 LOCALUSER={local_user}
@@ -35,6 +60,8 @@ EXCLUDE={exclude}
 f = open("./imapsync/"+local_user+".env", "w", encoding="utf-8")
 f.write(user_env)
 f.close()
+
+os.chmod("./imapsync/"+local_user+".env", 0o600)
 
 f = open("./imapsync/"+local_user+".pwd", "w", encoding="utf-8")
 f.write(remote_password)
