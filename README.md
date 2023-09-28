@@ -1,33 +1,4 @@
 # ns8-imapsync
-
-This is a template module for [NethServer 8](https://github.com/NethServer/ns8-core).
-To start a new module from it:
-
-1. Click on [Use this template](https://github.com/NethServer/ns8-imapsync/generate).
-   Name your repo with `ns8-` prefix (e.g. `ns8-mymodule`). 
-   Do not end your module name with a number, like ~~`ns8-baaad2`~~!
-
-1. Clone the repository, enter the cloned directory and
-   [configure your GIT identity](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup#_your_identity)
-
-1. Rename some references inside the repo:
-   ```
-   modulename=$(basename $(pwd) | sed 's/^ns8-//')
-   git mv imageroot/systemd/user/imapsync.service imageroot/systemd/user/${modulename}.service
-   git mv tests/imapsync.robot tests/${modulename}.robot
-   sed -i "s/imapsync/${modulename}/g" $(find .github/ * -type f)
-   git commit -a -m "Repository initialization"
-   ```
-
-1. Edit this `README.md` file, by replacing this section with your module
-   description
-
-1. Adjust `.github/workflows` to your needs. `clean-registry.yml` might
-   need the proper list of image names to work correctly. Unused workflows
-   can be disabled from the GitHub Actions interface.
-
-1. Commit and push your local changes
-
 ## Install
 
 Instantiate the module with:
@@ -43,10 +14,11 @@ Output example:
 
 Let's assume that the imapsync instance is named `imapsync1`.
 
+We need to bind imapsync to a mail server inside the cluster, we use the MODULE_UUID of mail server to configure imapsync, reveal the vmail master secret of local users and start the container waiting for cron tasks or individual user tasks
+
 Launch `configure-module`, by setting the following parameters:
-- `<MODULE_PARAM1_NAME>`: <MODULE_PARAM1_DESCRIPTION>
-- `<MODULE_PARAM2_NAME>`: <MODULE_PARAM2_DESCRIPTION>
-- ...
+- `mail_server`: module uuid of the mail server
+- `mail_hostname`: mail hostname of the mail server
 
 Example:
 
@@ -57,61 +29,68 @@ Example:
 
 The above command will:
 - start and configure the imapsync instance
-- (describe configuration process)
-- ...
-
-Send a test HTTP request to the imapsync backend service:
-
-    curl http://127.0.0.1/imapsync/
 
 ## start to sync a remote imap account to local user account
 
-security : tls|ssl|""
-trash_sync: enabled|disabled
+security : "tls" or "ssl" or ""
+trash_sync: "enabled","disabled"
 exclude: folder1,folder2,folder3
 
 Example:
 
-
-api-cli run module/imapsync1/create-imapsync-user-task --data '{
-    "local_user":"administrator",
-    "remote_hostname":"imap.foo.com",
-    "remote_port":"143",
-    "security":"tls",
-    "delete":"enabled",
-    "trash_sync":"disabled",
-    "exclude":"folder1,folder2",
-    "remote_username":"username",
-    "remote_password":"password"
-}'
-
+    api-cli run module/imapsync1/create-imapsync-user-task --data '{
+        "local_user":"administrator",
+        "remote_hostname":"imap.foo.com",
+        "remote_port":"143",
+        "security":"tls",
+        "delete":"enabled",
+        "trash_sync":"disabled",
+        "exclude":"folder1,folder2",
+        "remote_username":"username",
+        "remote_password":"password"
+    }'
 
 ## delete env and stop a running synchronisation
 
-Example
-api-cli run module/imapsync1/delete-imapsync-user-task --data '{
-    "local_user":"administrator"
-}'
+Example:
 
+    api-cli run module/imapsync1/delete-imapsync-user-task --data '{
+        "local_user":"administrator"
+    }'
 
-## Smarthost setting discovery
+## stop a running synchronisation
 
-Some configuration settings, like the smarthost setup, are not part of the
-`configure-module` action input: they are discovered by looking at some
-Redis keys.  To ensure the module is always up-to-date with the
-centralized [smarthost
-setup](https://nethserver.github.io/ns8-core/core/smarthost/) every time
-imapsync starts, the command `bin/discover-smarthost` runs and refreshes
-the `state/smarthost.env` file with fresh values from Redis.
+Example:
 
-Furthermore if smarthost setup is changed when imapsync is already
-running, the event handler `events/smarthost-changed/10reload_services`
-restarts the main module service.
+    api-cli run module/imapsync1/stop-imapsync-user-task --data '{
+        "local_user":"administrator"
+    }'
 
-See also the `systemd/user/imapsync.service` file.
+## start all configured tasks
+Read all `imapsync/*.env` files and start the synchronization
 
-This setting discovery is just an example to understand how the module is
-expected to work: it can be rewritten or discarded completely.
+Example:
+
+    api-cli run module/imapsync1/start-imapsync-all-tasks
+
+## stop all configured tasks
+Read all `imapsync/*.env` files and stop the synchronization
+
+Example:
+
+    api-cli run module/imapsync1/stop-imapsync-all-tasks
+
+## read configuration
+Read configuration from `environment` and from `imapsync/*.{env,pwd}`
+Example:
+
+    api-cli run module/imapsync1/get-configuration
+
+Answer:
+
+```json
+{"mail_server": "ae2ef222-7a53-449e-aa5a-b03736e51a6a", "mail_server_URL": [{"name": "mail1", "label": "mail1 (R3.rocky9-3.org)", "value": "ae2ef222-7a53-449e-aa5a-b03736e51a6a,R3.rocky9-3.org"}]}
+```
 
 ## Uninstall
 
