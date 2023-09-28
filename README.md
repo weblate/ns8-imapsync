@@ -38,7 +38,7 @@ exclude: folder1,folder2,folder3
 
 Example:
 
-    api-cli run module/imapsync1/create-imapsync-user-task --data '{
+    api-cli run module/imapsync1/create-task --data '{
         "local_user":"administrator",
         "remote_hostname":"imap.foo.com",
         "remote_port":"143",
@@ -54,7 +54,7 @@ Example:
 
 Example:
 
-    api-cli run module/imapsync1/delete-imapsync-user-task --data '{
+    api-cli run module/imapsync1/delete-task --data '{
         "local_user":"administrator"
     }'
 
@@ -62,7 +62,7 @@ Example:
 
 Example:
 
-    api-cli run module/imapsync1/stop-imapsync-user-task --data '{
+    api-cli run module/imapsync1/stop-task --data '{
         "local_user":"administrator"
     }'
 
@@ -71,14 +71,14 @@ Read all `imapsync/*.env` files and start the synchronization
 
 Example:
 
-    api-cli run module/imapsync1/start-imapsync-all-tasks
+    api-cli run module/imapsync1/start-all-tasks
 
 ## stop all configured tasks
 Read all `imapsync/*.env` files and stop the synchronization
 
 Example:
 
-    api-cli run module/imapsync1/stop-imapsync-all-tasks
+    api-cli run module/imapsync1/stop-all-tasks
 
 ## read configuration
 Read configuration from `environment` and from `imapsync/*.{env,pwd}`
