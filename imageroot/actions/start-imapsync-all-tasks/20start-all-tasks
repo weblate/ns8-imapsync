@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import glob
+import agent
+
+for file in glob.iglob("imapsync/*.env"):
+    local_user = file.removeprefix('imapsync/').removesuffix('.env')
+    agent.run_helper("systemctl", "--user", "restart", "imapsync@"+local_user).check_returncode()
