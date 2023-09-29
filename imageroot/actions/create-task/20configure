@@ -57,14 +57,12 @@ DELETE={delete}
 DELETEFOLDER={delete_folder}
 EXCLUDE={exclude}
 """
+os.umask(0o77)
+
 f = open("./imapsync/"+local_user+".env", "w", encoding="utf-8")
 f.write(user_env)
 f.close()
 
-os.chmod("./imapsync/"+local_user+".env", 0o600)
-
 f = open("./imapsync/"+local_user+".pwd", "w", encoding="utf-8")
 f.write(remote_password)
 f.close()
-
-os.chmod("./imapsync/"+local_user+".pwd", 0o600)
