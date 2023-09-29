@@ -13,6 +13,8 @@ import os
 import sys
 import json
 import agent
+import glob
+import subprocess
 
 # Prepare return variable
 config = {}
@@ -34,6 +36,58 @@ for key in agent.list_service_providers(rdb,'imap','tcp'):
 
 # use it inside a dropdown
 config['mail_server_URL'] = modules
+
+# we load env file from imapsync/*.env and remote password
+# Define the path to the file containing environment variables
+json_object = []
+for file in glob.iglob("imapsync/*.env"):
+    local_user = file.removeprefix('imapsync/').removesuffix('.env')
+    # Read the environment variables from the file
+    with open(file, 'r') as file:
+        env_lines = file.readlines()
+
+    # Initialize an empty list to store the environment variable key-value pairs
+    env_vars = []
+    obj = json.loads('{}')
+    # Parse the environment variables from the file
+    for line in env_lines:
+        stripped_line = line.strip()
+        if stripped_line:
+            # Split each line into key and value (assuming the format is "KEY=VALUE")
+            key, value = line.strip().split('=')
+            key = key.lower()
+            # Add the key-value pair as a dictionary to the list
+            if key =='security' and value == '--tls1':
+                value = 'tls'
+            elif key =='security' and value == '--ssl1':
+                value = 'ssl'
+            elif key =='security' and value == '':
+                value = ''
+
+            if key == 'delete' and value == '--delete2':
+                value = 'enabled'
+            elif key == 'delete' and value == '':
+                value = 'disabled' 
+            if key == "deletefolder":
+                continue
+            obj.update({key:value})
+    # remote password
+    with open('imapsync/'+local_user+'.pwd', 'r') as file:
+        env_lines = file.readlines()
+    for line in env_lines:
+        obj.update({'password':line})
+
+    #test if service is running 
+    service = subprocess.call(["systemctl", "is-active","--user", "--quiet", "imapsync@"+local_user+".service"])
+    service_status = True if service == 0 else False
+
+    # load the obj to list
+    env_vars.append(obj)
+    # Create a JSON object containing the list of environment variables
+    json_object.append({"props": env_vars, "local_user":local_user, "service_running":service_status})
+
+# Serialize the JSON object to a JSON-formatted string
+config['user_properties'] = json_object
 
 # Dump the configuration to stdout
 json.dump(config, fp=sys.stdout)
