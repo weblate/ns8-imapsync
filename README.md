@@ -33,21 +33,25 @@ The above command will:
 ## start to sync a remote imap account to local user account
 
 security : "tls" or "ssl" or ""
-trash_sync: "enabled","disabled"
-exclude: folder1,folder2,folder3
+trashsync: true, false
+-  delete mails and folder on local account not in remote account
+delete: true, false
+- exclude folders prepend by `^` and end by `$`
+exclude: folder1,folder2,^folder3$
+- the remote imap account credentials (you can use the password of the imap master administrator if you know it, for example vmail. use the login user*vmail and the relevant password). Otherwise use the login and the password of the remote account.
 
 Example:
 
     api-cli run module/imapsync1/create-task --data '{
-        "local_user":"administrator",
-        "remote_hostname":"imap.foo.com",
-        "remote_port":"143",
+        "localuser":"administrator",
+        "remotehostname":"imap.foo.com",
+        "remoteport":"143",
         "security":"tls",
         "delete":"enabled",
-        "trash_sync":"disabled",
+        "trashsync":"disabled",
         "exclude":"folder1,folder2",
-        "remote_username":"username",
-        "remote_password":"password"
+        "remoteusername":"username",
+        "remotepassword":"password"
     }'
 
 ## delete env and stop a running synchronisation
@@ -55,7 +59,7 @@ Example:
 Example:
 
     api-cli run module/imapsync1/delete-task --data '{
-        "local_user":"administrator"
+        "localuser":"administrator"
     }'
 
 ## stop a running synchronisation
@@ -63,7 +67,7 @@ Example:
 Example:
 
     api-cli run module/imapsync1/stop-task --data '{
-        "local_user":"administrator"
+        "localuser":"administrator"
     }'
 
 ## start all configured tasks
@@ -89,7 +93,48 @@ Example:
 Answer:
 
 ```json
-{"mail_server": "ae2ef222-7a53-449e-aa5a-b03736e51a6a", "mail_server_URL": [{"name": "mail1", "label": "mail1 (R3.rocky9-3.org)", "value": "ae2ef222-7a53-449e-aa5a-b03736e51a6a,R3.rocky9-3.org"}]}
+{
+  "mail_server": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf",
+  "mail_server_URL": [
+    {
+      "name": "mail2",
+      "label": "mail2 (R3.rocky9-3.org)",
+      "value": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf,R3.rocky9-3.org"
+    }
+  ],
+  "user_properties": [
+    {
+      "props": {
+        "localuser": "administrator",
+        "remoteusername": "username",
+        "remotehostname": "imap.foo.com",
+        "remoteport": "143",
+        "security": "tls",
+        "delete": true,
+        "trashsync": true,
+        "exclude": "folder1|folder2",
+        "remotepassword": "password"
+      },
+      "mailbox": "administrator",
+      "service_running": false
+    },
+    {
+      "props": {
+        "localuser": "stephane",
+        "remoteusername": "",
+        "remotehostname": "",
+        "remoteport": "",
+        "security": "",
+        "delete": false,
+        "trashsync": false,
+        "exclude": "",
+        "remotepassword": ""
+      },
+      "mailbox": "stephane",
+      "service_running": false
+    }
+  ]
+
 ```
 
 ## Uninstall
