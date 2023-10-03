@@ -13,7 +13,7 @@ import glob
 import os
 
 data = json.load(sys.stdin)
-local_user = data["local_user"]
+localuser = data["localuser"]
 
-for file in glob.iglob("imapsync/"+local_user+".*"):
+for file in glob.iglob("imapsync/"+localuser+".*"):
     os.remove(file)

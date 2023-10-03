@@ -9,5 +9,5 @@ import glob
 import agent
 
 for file in glob.iglob("imapsync/*.env"):
-    local_user = file.removeprefix('imapsync/').removesuffix('.env')
-    agent.run_helper("systemctl", "--user", "stop", "imapsync@"+local_user).check_returncode()
+    localuser = file.removeprefix('imapsync/').removesuffix('.env')
+    agent.run_helper("systemctl", "--user", "stop", "imapsync@"+localuser).check_returncode()

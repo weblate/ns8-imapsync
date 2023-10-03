@@ -14,5 +14,5 @@ import agent
 
 data = json.load(sys.stdin)
 
-local_user = data["local_user"]
-agent.run_helper("systemctl", "--user", "stop", "imapsync@"+local_user).check_returncode()
+localuser = data["localuser"]
+agent.run_helper("systemctl", "--user", "stop", "imapsync@"+localuser).check_returncode()
