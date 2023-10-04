@@ -40,9 +40,7 @@
               ref="mail_server"
             >
               <template slot="tooltip">
-              {{
-                $t("settings.choose_the_mail_server_to_use")
-              }}
+                {{ $t("settings.choose_the_mail_server_to_use") }}
               </template>
             </NsComboBox>
             <cv-row v-if="error.configureModule">
@@ -179,7 +177,7 @@ export default {
         const mail_server_tmp = config.mail_server;
         const mail_hostname_tmp = config.mail_hostname;
         if (mail_server_tmp && mail_hostname_tmp) {
-          this.mail_server = mail_server_tmp + ',' + mail_hostname_tmp;
+          this.mail_server = mail_server_tmp + "," + mail_hostname_tmp;
         } else {
           this.mail_server = "";
         }
@@ -243,7 +241,7 @@ export default {
         `${taskAction}-completed-${eventId}`,
         this.configureModuleCompleted
       );
-      const tmparray = this.mail_server.split(',');
+      const tmparray = this.mail_server.split(",");
       const mail_server_tmp = tmparray[0];
       const mail_hostname_tmp = tmparray[1];
       const res = await to(
