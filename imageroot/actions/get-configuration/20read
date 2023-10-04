@@ -13,8 +13,7 @@ import os
 import sys
 import json
 import agent
-import glob
-import subprocess
+
 
 # Prepare return variable
 config = {}
@@ -37,108 +36,6 @@ for key in agent.list_service_providers(rdb,'imap','tcp'):
 
 # use it inside a dropdown
 config['mail_server_URL'] = modules
-
-# we want to find all enabled mailbox, first retrieve the mail server we are bound
-# second retrieve the mail box by action list-user-mailboxes and make a list of enabled mailbox
-# read env files, test if mailbox is enabled to push to config[user_properties]
-if mail_server == "":
-    config['user_properties'] = []
-else: 
-    # retrieve mail module_id from module_uuid
-    mail_server = os.environ["MAIL_SERVER"]
-    providers = agent.list_service_providers(rdb, 'imap', 'tcp', {
-        'module_uuid': mail_server,
-    })
-    mail_id = providers[0]["module_id"]
-    response = agent.tasks.run(f"module/{mail_id}", action='list-user-mailboxes')
-    agent.assert_exp(response['exit_code'] == 0)
-    user_mailboxes = response['output']['user_mailboxes']
-    
-    # Create a dictionary to store enabled user mailboxes
-    enabled_mailboxes = []
-    
-    # Iterate through user_mailboxes and filter by 'enabled' (if the field exists)
-    for mailbox in user_mailboxes:
-        if 'enabled' in mailbox and not mailbox['enabled']:
-            continue  # Skip disabled mailboxes
-        enabled_mailboxes.append(mailbox['user'])
-    
-    
-    # we load env file from imapsync/*.env and remote password
-    user_properties = []
-    # Try if user with enabled mailbox are configured in env file except with default value
-    for user in enabled_mailboxes:
-        env_files = list(glob.iglob("imapsync/*.env"))
-        try:
-            # test if enabled_mailbox match glob env file except to default value
-            position = env_files.index('imapsync/'+user+'.env')
-            # Read the environment variables from the file
-            with open('imapsync/'+user+'.env', 'r') as file:
-                env_lines = file.readlines()
-            # Initialize an empty en_vars and empty read_file to store the environment variable key-value pairs
-            env_vars ={}
-            read_file = {}
-            # Parse the environment variables from the file
-            for line in env_lines:
-                stripped_line = line.strip()
-                if stripped_line:
-                    # Split each line into key and value (assuming the format is "KEY=VALUE")
-                    key, value = line.strip().split('=')
-                    key = key.lower()
-                    # Add the key-value pair as a dictionary to the list
-                    if key =='security' and value == '--tls1':
-                        value = 'tls'
-                    elif key =='security' and value == '--ssl1':
-                        value = 'ssl'
-                    elif key =='security' and value == '':
-                        value = ''
-                    # retrieve delete True/False
-                    if key == 'delete' and value == '--delete2':
-                        value = True
-                    elif key == 'delete' and value == '':
-                        value = False
-                    if key == "deletefolder":
-                        continue
-                    # retrieve trash_sync enabled/disabled
-                    if key == "exclude" and '|^Trash|^Deleted Items' in value:
-                        read_file.update({"trashsync":False})
-                        value = value.removesuffix('|^Trash|^Deleted Items')
-                    elif key == "exclude" and '|^Trash|^Deleted Items' not in value:
-                        read_file.update({"trashsync":True})
-                    read_file.update({key:value})
-            # remote password
-            with open('imapsync/'+user+'.pwd', 'r') as file:
-                env_lines = file.readlines()
-            for line in env_lines:
-                read_file.update({'remotepassword':line})
-    
-            #test if service is running 
-            service = subprocess.call(["systemctl", "is-active","--user", "--quiet", "imapsync@"+user+".service"])
-            service_status = True if service == 0 else False
-    
-            # load the read_file to list
-            env_vars.update(read_file)
-            # Create a JSON read_fileect containing the list of environment variables
-            user_properties.append({"props": env_vars, "mailbox":user, "service_running":service_status})
-    
-        except ValueError:
-            user_properties.append({"props":
-                {
-                    "localuser": user,
-                    "remoteusername":"",
-                    "remotehostname": "",
-                    "remoteport": "",
-                    "security":"", 
-                    "delete":False,
-                    "trashsync": False,
-                    "exclude":"",
-                    "remotepassword":""
-                }, 
-                    "mailbox":user,
-                    "service_running":False
-                })
-    # Serialize the JSON read_fileect to a JSON-formatted string
-    config['user_properties'] = user_properties
 
 # Dump the configuration to stdout
 json.dump(config, fp=sys.stdout)

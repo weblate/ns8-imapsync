@@ -1,0 +1,8 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "get-configuration output",
+    "$id": "http://schema.nethserver.org/imapsync/list-task-output.json",
+    "description": "Get tasks configuration",
+    "examples": [],
+    "type": "object"
+}
