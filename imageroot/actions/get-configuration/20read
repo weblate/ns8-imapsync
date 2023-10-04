@@ -20,8 +20,8 @@ config = {}
 
 rdb = agent.redis_connect() # full read-only access on every key
 
-mail_server = os.getenv("MAIL_SERVER", "") # the value is the Mail module UUID!
-config["mail_server"]  = mail_server 
+config["mail_server"] = os.getenv("MAIL_SERVER", "") # the value is the Mail module UUID! 
+config["mail_hostname"] = os.getenv("MAIL_HOSTNAME", "")
 
 modules=[]
 tmp = []
