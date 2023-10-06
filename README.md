@@ -47,8 +47,8 @@ Example:
         "remotehostname":"imap.foo.com",
         "remoteport":"143",
         "security":"tls",
-        "delete":"enabled",
-        "trashsync":"disabled",
+        "delete": false,
+        "trashsync":false,
         "exclude":"folder1,folder2",
         "remoteusername":"username",
         "remotepassword":"password"
@@ -67,6 +67,14 @@ Example:
 Example:
 
     api-cli run module/imapsync1/stop-task --data '{
+        "localuser":"administrator"
+    }'
+
+## start a running synchronisation
+
+Example:
+
+    api-cli run module/imapsync1/start-task --data '{
         "localuser":"administrator"
     }'
 
