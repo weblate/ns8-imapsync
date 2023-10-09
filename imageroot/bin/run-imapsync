@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# helper to trigger users task. we need two arguments
+
+action=${1:-}
+localuser=${2:-}
+
+systemctl --user ${action} imapsync@${localuser}.service
