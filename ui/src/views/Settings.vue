@@ -183,7 +183,6 @@ export default {
         }
       });
       this.loading.getConfiguration = false;
-      // this.focusElement("mail_server");
     },
     validateConfigureModule() {
       this.clearErrors(this);
