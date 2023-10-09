@@ -96,7 +96,6 @@
           <template slot="text-left">{{ $t("tasks.disabled") }}</template>
           <template slot="text-right">{{ $t("tasks.enabled") }}</template>
         </NsToggle>
-        <div>{{ $t("tasks.confirm_create_task_message") }}</div>
       </cv-form>
     </template>
     <template slot="secondary-button">{{ core.$t("common.cancel") }}</template>
