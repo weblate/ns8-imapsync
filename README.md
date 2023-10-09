@@ -103,6 +103,7 @@ Answer:
 ```json
 {
   "mail_server": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf",
+  "mail_hostname": "R3.rocky9-3.org",
   "mail_server_URL": [
     {
       "name": "mail2",
@@ -120,7 +121,7 @@ Answer:
         "security": "tls",
         "delete": true,
         "trashsync": true,
-        "exclude": "folder1|folder2",
+        "exclude": "|folder1|folder2",
         "remotepassword": "password"
       },
       "mailbox": "administrator",
@@ -142,7 +143,7 @@ Answer:
       "service_running": false
     }
   ]
-
+}
 ```
 
 ## Uninstall
