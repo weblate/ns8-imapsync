@@ -7,8 +7,5 @@
 
 set -e
 
-# Redirect any output to the journal (stderr)
-exec 1>&2
-
 # Restart if running, ignore if stopped
 systemctl --user try-restart imapsync.service
