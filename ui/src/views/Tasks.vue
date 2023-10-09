@@ -477,7 +477,7 @@ export default {
             localuser: this.currentTask.mailbox,
             remotehostname: this.currentTask.remotehostname,
             remotepassword: this.currentTask.remotepassword,
-            remoteport: this.currentTask.remoteport,
+            remoteport: Number(this.currentTask.remoteport),
             remoteusername: this.currentTask.remoteusername,
             security: this.currentTask.security,
             delete: this.currentTask.delete,

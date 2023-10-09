@@ -1,0 +1,91 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "configure-module input",
+    "$id": "http://schema.nethserver.org/imapsync/create_task.json",
+    "description": "Create user tasks",
+    "examples": [
+        {
+            "localuser": "john",
+            "remoteusername": "john@domain.com",
+            "remotehostname": "imap.domain.com",
+            "remotepassword": "password",
+            "remoteport": 143,
+            "security": "tls",
+            "delete": true,
+            "trashsync": true,
+            "exclude": "folder1,folder2"
+        }
+    ],
+    "type": "object",
+    "required": [
+        "localuser",
+        "remoteusername",
+        "remotehostname",
+        "remotepassword",
+        "remoteport",
+        "security",
+        "delete",
+        "trashsync",
+        "exclude"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "localuser": {
+            "type": "string",
+            "title": "Local User",
+            "description": "Local user of the local account",
+            "minLength": 1
+        },
+        "remoteusername": {
+            "type": "string",
+            "title": "Remote User",
+            "description": "Remote user of the remote account",
+            "oneOf": [
+                {
+                    "minLength": 1
+                },
+                {
+                    "format": "email",
+                    "minLength": 1
+                }
+            ]
+        },
+        "remotehostname": {
+            "type": "string",
+            "description": "Host name for the remote account",
+            "format": "idn-hostname",
+            "title": "remotehostname"
+        },
+        "remoteport": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "Remote port used for the server",
+            "title": "remoteport"
+        },
+        "security": {
+            "title": "security",
+            "type": "string",
+            "enum": [
+                "",
+                "tls",
+                "ssl"
+            ]
+        },
+        "delete": {
+            "type": "boolean",
+            "title": "Delete Email",
+            "description": "delete Email not on remote server"
+        },
+        "trashsync": {
+            "type": "boolean",
+            "title": "Synchronize trash",
+            "description": "Synchronize deleted email on remote server"
+        },
+        "exclude": {
+            "title": "exclude",
+            "type": "string",
+            "description": "Folders exclusion"
+        }
+    }
+}
