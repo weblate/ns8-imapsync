@@ -42,7 +42,7 @@
     "col_mailbox": "Local user",
     "col_remoteusername": "Remote user",
     "col_remotehostname": "IMAP server",
-    "col_service": "Service",
+    "col_task_status": "Task status",
     "create": "Create",
     "edit": "Edit",
     "start": "Start",

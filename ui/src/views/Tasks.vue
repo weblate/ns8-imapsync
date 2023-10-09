@@ -224,7 +224,7 @@ export default {
       Add20,
       urlCheckInterval: null,
       tablePage: [],
-      tableColumns: ["mailbox", "remoteusername", "remotehostname","service"],
+      tableColumns: ["mailbox", "remoteusername", "remotehostname","task_status"],
       tasks: [],
       check_tasks: false,
       isShownConfirmDeleteTask: false,
