@@ -43,7 +43,7 @@ exclude = exclude.split(',')
 if exclude != "":
     exclude = '|'.join(exclude)
 if not trashsync:
-    exclude = exclude + '|^Trash|^Deleted Items' 
+    exclude = exclude + '|Trash|Deleted Items' 
 
 user_env = f"""
 LOCALUSER={localuser}

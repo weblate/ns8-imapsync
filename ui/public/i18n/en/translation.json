@@ -59,7 +59,6 @@
     "remoteport": "IMAP TCP Port",
     "exclude_folder": "Folders exclusion",
     "write_one_exclusion_per_line": "Write one exclusion per line",
-    "regex_aware_use_^_and$": "For better filtering, use ^foldername$",
     "delete_on_local": "Delete on local",
     "delete_tips": "Delete local emails and folders not present on the remote IMAP account",
     "trashsync": "Sync trash",

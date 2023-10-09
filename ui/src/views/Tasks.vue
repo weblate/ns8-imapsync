@@ -329,7 +329,7 @@ export default {
             remoteusername: task.props.remoteusername,
             security: task.props.security,
             delete: task.props.delete,
-            exclude: task.props.exclude.split('|').join('\n'),
+            exclude: task.props.exclude.split('|').filter(value => value.trim() !== '').join('\n'), //filter empty values
             trashsync: task.props.trashsync
           });
       });

@@ -65,7 +65,6 @@
           v-model.trim="task.exclude"
           ref="exclude"
           :placeholder="$t('tasks.write_one_exclusion_per_line')"
-          :helperText="$t('tasks.regex_aware_use_^_and$')"
         >
         </cv-text-area>
         <NsToggle
