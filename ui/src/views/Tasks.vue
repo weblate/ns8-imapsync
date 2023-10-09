@@ -97,9 +97,6 @@
             >
               <template slot="empty-state">
                 <NsEmptyState :title="$t('tasks.no_tasks')">
-                  <template #pictogram>
-                    <FaceSatisfiedPictogram />
-                  </template>
                 </NsEmptyState>
               </template>
               <template slot="data">
