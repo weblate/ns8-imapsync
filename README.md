@@ -93,7 +93,7 @@ Example:
     api-cli run module/imapsync1/stop-all-tasks
 
 ## read configuration
-Read configuration from `environment` and from `imapsync/*.{env,pwd}`
+
 Example:
 
     api-cli run module/imapsync1/get-configuration
@@ -111,6 +111,17 @@ Answer:
       "value": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf,R3.rocky9-3.org"
     }
   ],
+}
+```
+
+## list-tasks
+
+Read configuration from `environment` and from `imapsync/*.{env,pwd}`
+
+api-cli run module/imapsync1/list-tasks
+
+```json
+{
   "user_properties": [
     {
       "props": {
@@ -129,7 +140,7 @@ Answer:
     },
     {
       "props": {
-        "localuser": "stephane",
+        "localuser": "foo",
         "remoteusername": "",
         "remotehostname": "",
         "remoteport": "",
@@ -139,7 +150,7 @@ Answer:
         "exclude": "",
         "remotepassword": ""
       },
-      "mailbox": "stephane",
+      "mailbox": "foo",
       "service_running": false
     }
   ]
