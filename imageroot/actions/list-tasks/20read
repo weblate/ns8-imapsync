@@ -58,51 +58,43 @@ else:
             # test if enabled_mailbox match glob env file except to default value
             position = env_files.index('imapsync/'+user+'.env')
             # Read the environment variables from the file
-            with open('imapsync/'+user+'.env', 'r') as file:
-                env_lines = file.readlines()
-            # Initialize an empty en_vars and empty read_file to store the environment variable key-value pairs
+            data = agent.read_envfile('imapsync/'+user+'.env')
+            # we want minor keys
+            data = {key.lower(): value for key, value in data.items()}
+            # Initialize an empty env_vars and empty tmp_env to store vars from json obj read_envfile
             env_vars ={}
-            read_file = {}
+            tmp_env = {}
+            
             # Parse the environment variables from the file
-            for line in env_lines:
-                stripped_line = line.strip()
-                if stripped_line:
-                    # Split each line into key and value (assuming the format is "KEY=VALUE")
-                    key, value = line.strip().split('=')
-                    key = key.lower()
-                    # Add the key-value pair as a dictionary to the list
-                    if key =='security' and value == '--tls1':
-                        value = 'tls'
-                    elif key =='security' and value == '--ssl1':
-                        value = 'ssl'
-                    elif key =='security' and value == '':
-                        value = ''
-                    # retrieve delete True/False
-                    if key == 'delete' and value == '--delete2':
-                        value = True
-                    elif key == 'delete' and value == '':
-                        value = False
-                    if key == "deletefolder":
-                        continue
-                    # retrieve trash_sync enabled/disabled
-                    if key == "exclude" and '|^Trash|^Deleted Items' in value:
-                        read_file.update({"trashsync":False})
-                        value = value.removesuffix('|^Trash|^Deleted Items')
-                    elif key == "exclude" and '|^Trash|^Deleted Items' not in value:
-                        read_file.update({"trashsync":True})
-                    read_file.update({key:value})
-            # remote password
+            if "security" in data and data["security"] == "--tls1":
+                data["security"] = "tls"
+            elif "security" in data and data["security"] == "--ssl1":
+                data["security"] = "ssl"
+            elif "security" in data and data["security"] == "":
+                data["security"] = ""
+            if "delete" in data and data["delete"] == "--delete2":
+                data["delete"] = True
+            elif "delete" in data and data["delete"] == "":
+                data["delete"] = False
+
+            if "exclude" in data and '|^Trash|^Deleted Items' in data["exclude"]:
+                data["trashsync"] = False
+                data["exclude"] = data["exclude"].removesuffix('|^Trash|^Deleted Items')
+            elif "exclude" in data and '|^Trash|^Deleted Items' not in data["exclude"]:
+                data["trashsync"] = True
+
+            tmp_env.update(data)
+            # remote password (single line)
             with open('imapsync/'+user+'.pwd', 'r') as file:
                 env_lines = file.readlines()
             for line in env_lines:
-                read_file.update({'remotepassword':line})
-    
+                tmp_env.update({'remotepassword':line})
             #test if service is running 
             service = subprocess.call(["systemctl", "is-active","--user", "--quiet", "imapsync@"+user+".service"])
             service_status = True if service == 0 else False
     
-            # load the read_file to list
-            env_vars.update(read_file)
+            # load the tmp_env to list
+            env_vars.update(tmp_env)
             # Create a JSON read_fileect containing the list of environment variables
             user_properties.append({"props": env_vars, "mailbox":user, "service_running":service_status})
     
