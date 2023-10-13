@@ -39,11 +39,8 @@ else:
 # exclude file if string,string2 or trashsync == disabled
 exclude = data.get("exclude",'')
 trashsync= data.get("trashsync",False)
-exclude = exclude.split(',')
-if exclude != "":
-    exclude = '|'.join(exclude)
 if not trashsync:
-    exclude = exclude + '|Trash|Deleted Items' 
+    exclude = exclude + ',Trash,Deleted Items' 
 
 user_env = f"""
 LOCALUSER={localuser}

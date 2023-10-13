@@ -365,7 +365,7 @@ export default {
           security: task.security,
           delete: task.delete,
           exclude: task.exclude
-            .split("|")
+            .split(",")
             .filter((value) => value.trim() !== "")
             .join("\n"), //filter empty values
           trashsync: task.trashsync,

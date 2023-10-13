@@ -78,10 +78,10 @@ else:
         elif "delete" in data and data["delete"] == "":
             data["delete"] = False
     
-        if "exclude" in data and '|^Trash|^Deleted Items' in data["exclude"]:
+        if "exclude" in data and 'Trash,Deleted Items' in data["exclude"]:
             data["trashsync"] = False
-            data["exclude"] = data["exclude"].removesuffix('|^Trash|^Deleted Items')
-        elif "exclude" in data and '|^Trash|^Deleted Items' not in data["exclude"]:
+            data["exclude"] = data["exclude"].removesuffix('Trash,Deleted Items')
+        elif "exclude" in data and 'Trash,Deleted Items' not in data["exclude"]:
             data["trashsync"] = True
     
         # remote password (single line)
@@ -90,8 +90,7 @@ else:
         for line in env_lines:
             data['remotepassword']=line
         #test if service is running 
-        service = subprocess.call(["systemctl", "is-active","--user", "--quiet", "imapsync@"+user+".service"])
-        service_status = True if service == 0 else False
+        service_status = True if os.path.exists("imapsync/"+user+".pid") else False
        
         data["service_running"]=service_status
         user_properties.append(data)
