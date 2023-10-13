@@ -17,6 +17,6 @@ ExecStart=/usr/bin/podman exec \
     --passfile1 /etc/imapsync/%i.pwd --port1 ${REMOTEPORT} ${SECURITY}  \
     --host2 ${MAIL_HOSTNAME}  --user2 ${LOCALUSER}*vmail \
     --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
-    --exclude '^(Public|Shared${EXCLUDE})$'
+    --exclude ^(Public|Shared${EXCLUDE})$
 Type=simple
 SyslogIdentifier=%N
