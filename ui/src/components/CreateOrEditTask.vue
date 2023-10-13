@@ -7,17 +7,38 @@
     size="default"
     :visible="isShown"
     @modal-hidden="$emit('hide')"
-    @primary-click="$emit('confirm')"
+    @primary-click="createTask"
   >
     <template slot="title"
       >{{
-        task.remoteusername === ""
-          ? $t("tasks.create_task")
-          : $t("tasks.edit_task")
-      }}: {{ task.mailbox }}</template
+        !isEdit
+          ? $t("tasks.create_task") + " "
+          : $t("tasks.edit_task") + " "
+      }}{{ task.localuser }}</template
     >
     <template slot="content">
       <cv-form>
+        <template v-if="!isEdit">
+          <NsComboBox
+            v-model.trim="task.localuser"
+            :autoFilter="true"
+            :autoHighlight="true"
+            :title="$t('tasks.local_user')"
+            :label="$t('tasks.choose_local_user')"
+            :options="enabled_mailboxes"
+            :userInputLabel="$t('tasks.choose_local_user')"
+            :acceptUserInput="false"
+            :showItemType="true"
+            :invalid-message="$t(error.enabled_mailboxes)"
+            tooltipAlignment="start"
+            tooltipDirection="top"
+            ref="localuser"
+          >
+            <template slot="tooltip">
+              {{ $t("tasks.choose_the_user_to_sync") }}
+            </template>
+          </NsComboBox>
+        </template>
         <NsTextInput
           v-model.trim="task.remoteusername"
           :label="$t('tasks.remoteusername')"
@@ -97,20 +118,117 @@
         </NsToggle>
       </cv-form>
     </template>
-    <template slot="secondary-button">{{ core.$t("common.cancel") }}</template>
-    <template slot="primary-button">{{ core.$t("common.save") }}</template>
+    <cv-row v-if="error.createTaks">
+      <cv-column>
+        <NsInlineNotification
+          kind="error"
+          :title="$t('action.createTask')"
+          :description="error.createTask"
+          :showCloseButton="false"
+        />
+      </cv-column>
+    </cv-row>
+    <template slot="secondary-button">{{ $t("common.cancel") }}</template>
+    <template slot="primary-button">{{ $t("common.save") }}</template>
   </NsModal>
 </template>
 
 <script>
-import { UtilService, IconService } from "@nethserver/ns8-ui-lib";
+import to from "await-to-js";
+import { UtilService, TaskService } from "@nethserver/ns8-ui-lib";
+import { mapState } from "vuex";
+
 export default {
   name: "CreateOrEditTask",
-  mixins: [UtilService, IconService],
+  mixins: [UtilService, TaskService],
   props: {
     isShown: Boolean,
+    isEdit: Boolean,
     task: { type: [Object, null] },
-    core: { type: Object },
+    enabled_mailboxes: { type: Array },
+  },
+
+  data() {
+    return {
+      isValidated: false,
+      previousValues: { Port: "", Security: "", hostname: "" },
+      loading: {
+        testImap: false,
+        createTask: false,
+        setCreateTask: false,
+      },
+      error: {
+        enabled_mailboxe: "",
+        testImap: "",
+        createTask: "",
+      },
+    };
+  },
+  computed: {
+    ...mapState(["instanceName", "core", "appName"]),
+  },
+  methods: {
+    async createTask() {
+      this.loading.createTask = true;
+      this.error.createTask = "";
+      const taskAction = "create-task";
+      const eventId = this.getUuid();
+      // register to task error
+      this.core.$root.$once(
+        `${taskAction}-aborted-${eventId}`,
+        this.setCreateTaskAborted
+      );
+      // register to task completion
+      this.core.$root.$once(
+        `${taskAction}-completed-${eventId}`,
+        this.setCreateTaskCompleted
+      );
+      const res = await to(
+        this.createModuleTaskForApp(this.instanceName, {
+          action: taskAction,
+          data: {
+            localuser: this.task.localuser,
+            remotehostname: this.task.remotehostname,
+            remotepassword: this.task.remotepassword,
+            remoteport: Number(this.task.remoteport),
+            remoteusername: this.task.remoteusername,
+            security: this.task.security,
+            delete: this.task.delete,
+            exclude: this.task.exclude
+              .split("\n")
+              .map((item) => item.trim())
+              .join(","),
+            trashsync: this.task.trashsync,
+          },
+          extra: {
+            title: this.$t("action." + taskAction),
+            isNotificationHidden: true,
+            eventId,
+          },
+        })
+      );
+      const err = res[0];
+      // this.previousValues.Port = this.task.remoteport;
+      // this.previousValues.Security = this.task.security;
+      // this.previousValues.hostname = this.task.remotehostname;
+      if (err) {
+        console.error(`error creating task ${taskAction}`, err);
+        this.error.setCreateTask = this.getErrorMessage(err);
+        this.loading.setCreateTask = false;
+        return;
+      }
+    },
+    setCreateTaskAborted(taskResult, taskContext) {
+      console.error(`${taskContext.action} aborted`, taskResult);
+      this.error.setCreateTask = this.$t("error.generic_error");
+      this.loading.setCreateTask = false;
+    },
+    setCreateTaskCompleted() {
+      this.loading.setCreateTask = false;
+      this.task.localuser =="";
+      this.$emit("hide");
+      this.$emit("reloadtasks");
+    },
   },
 };
 </script>

@@ -34,33 +34,47 @@
       </cv-row>
       <cv-row class="toolbar">
         <cv-column>
-          <template>
-            <NsButton
-              kind="secondary"
-              :icon="Restart20"
-              @click="listTasks"
-              :disabled="loading.listTasks || loading.setDeleteTask"
-              >{{ $t("tasks.reload_tasks") }}
-            </NsButton>
-          </template>
-          <template v-if="tasks.length">
-            <NsButton
-              kind="secondary"
-              class="mg-left"
-              :icon="Play20"
-              @click="startAllTasks"
-              :disabled="loading.listTasks || loading.setDeleteTask"
-              >{{ $t("tasks.start_all") }}
-            </NsButton>
-            <NsButton
-              kind="secondary"
-              class="mg-left"
-              :icon="Stop20"
-              @click="stopAllTasks"
-              :disabled="loading.listTasks || loading.setDeleteTask"
-              >{{ $t("tasks.stop_all") }}
-            </NsButton>
-          </template>
+          <div>
+            <template>
+              <NsButton
+                kind="primary"
+                class="page-toolbar-item"
+                :icon="enabled_mailboxes.length ? Add20 : ''"
+                @click="toggleCreateTask"
+                :disabled="
+                  loading.listTasks ||
+                  loading.setDeleteTask ||
+                  !enabled_mailboxes.length
+                "
+                >{{
+                  enabled_mailboxes.length
+                    ? $t("tasks.create_task")
+                    : $t("tasks.no_more_task")
+                }}
+              </NsButton>
+              <NsButton
+                kind="secondary"
+                class="mg-left page-toolbar-item"
+                :icon="Restart20"
+                @click="listTasks"
+                :disabled="loading.listTasks || loading.setDeleteTask"
+                >{{ $t("tasks.reload_tasks") }}
+              </NsButton>
+              <NsIconMenu
+                :flipMenu="true"
+                tipPosition="top"
+                tipAlignment="end"
+                class="page-toolbar-item kebab-height"
+              >
+                <cv-overflow-menu-item @click="startAllTasks">
+                  <NsMenuItem :icon="Play20" :label="$t('tasks.start_all')" />
+                </cv-overflow-menu-item>
+                <cv-overflow-menu-item @click="stopAllTasks">
+                  <NsMenuItem :icon="Stop20" :label="$t('tasks.stop_all')" />
+                </cv-overflow-menu-item>
+              </NsIconMenu>
+            </template>
+          </div>
         </cv-column>
       </cv-row>
       <cv-row>
@@ -96,8 +110,13 @@
               @updatePage="tablePage = $event"
             >
               <template slot="empty-state">
-                <NsEmptyState :title="$t('tasks.no_tasks')">
-                </NsEmptyState>
+                <template v-if="enabled_mailboxes.length">
+                  <NsEmptyState :title="$t('tasks.no_tasks')"> </NsEmptyState>
+                </template>
+                <template v-else>
+                  <NsEmptyState :title="$t('tasks.no_email_server')">
+                  </NsEmptyState>
+                </template>
               </template>
               <template slot="data">
                 <cv-data-table-row
@@ -107,9 +126,7 @@
                 >
                   <cv-data-table-row>
                     <div class="mg-top mg-left gray">
-                      {{
-                        row.mailbox
-                      }}
+                      {{ row.localuser }}
                     </div>
                   </cv-data-table-row>
                   <cv-data-table-cell>
@@ -119,35 +136,38 @@
                     {{ row.remotehostname }}
                   </cv-data-table-cell>
                   <cv-data-table-cell>
-                    {{ row.service ? $t('tasks.running') : row.remoteusername === "" ? $t('tasks.not_configured') : $t('tasks.stopped') }}
+                    {{
+                      row.service ? $t("tasks.running") : $t("tasks.stopped")
+                    }}
                   </cv-data-table-cell>
                   <cv-data-table-cell class="table-overflow-menu-cell">
                     <cv-overflow-menu
                       flip-menu
                       class="table-overflow-menu"
-                      :data-test-id="row.mailbox + '-menu'"
+                      :data-test-id="row.localuser + '-menu'"
                     >
                       <cv-overflow-menu-item
-                        @click="toggleCreateOrEditTask(row)"
-                        :data-test-id="row.mailbox + '-edit-task'"
+                        @click="toggleEditTask(row)"
+                        :data-test-id="row.localuser + '-edit-task'"
                       >
-                        <NsMenuItem
-                          :icon="row.remoteusername === '' ? Add20 : Edit20"
-                          :label="row.remoteusername === '' ? $t('tasks.create') : $t('tasks.edit')"
-                        />
+                        <NsMenuItem :icon="Edit20" :label="$t('tasks.edit')" />
                       </cv-overflow-menu-item>
-                      <cv-overflow-menu-item v-if="row.remoteusername !== ''"
+                      <cv-overflow-menu-item
+                        v-if="row.remoteusername !== ''"
                         @click="toggleActionTask(row)"
-                        :data-test-id="row.mailbox + '-action-task'"
+                        :data-test-id="row.localuser + '-action-task'"
                       >
                         <NsMenuItem
                           :icon="row.service ? Stop20 : Play20"
-                          :label="row.service ? $t('tasks.stop'): $t('tasks.start')"
+                          :label="
+                            row.service ? $t('tasks.stop') : $t('tasks.start')
+                          "
                         />
                       </cv-overflow-menu-item>
-                      <cv-overflow-menu-item v-if="row.remoteusername !== ''"
+                      <cv-overflow-menu-item
+                        v-if="row.remoteusername !== ''"
                         @click="toggleDeleteTask(row)"
-                        :data-test-id="row.mailbox + '-delete-task'"
+                        :data-test-id="row.localuser + '-delete-task'"
                       >
                         <NsMenuItem
                           :icon="TrashCan20"
@@ -173,9 +193,10 @@
     <CreateOrEditTask
       :isShown="isShownCreateOrEditTask"
       :task="currentTask"
-      :core="core"
+      :enabled_mailboxes="enabled_mailboxes"
+      :isEdit="isEdit"
       @hide="hideCreateOrEditTask"
-      @confirm="createTask(false)"
+      @reloadtasks="listTasks"
     />
   </div>
 </template>
@@ -221,31 +242,38 @@ export default {
       Add20,
       urlCheckInterval: null,
       tablePage: [],
-      tableColumns: ["mailbox", "remoteusername", "remotehostname","task_status"],
+      tableColumns: [
+        "localuser",
+        "remoteusername",
+        "remotehostname",
+        "task_status",
+      ],
       tasks: [],
+      enabled_mailboxes: [],
+      isEdit: false,
       check_tasks: false,
       isShownConfirmDeleteTask: false,
       isShownCreateOrEditTask: false,
-      previousValues:{
+      previousValues: {
         Port: "",
         Security: "",
-        hostname: ""
+        hostname: "",
       },
       currentTask: {
-        mailbox: "",
+        localuser: "",
         remoteusername: "",
         remotehostname: "",
-        remotepassword:"",
+        remotepassword: "",
         service: false,
         remoteport: "",
-        security:"",
+        security: "",
         delete: false,
-        exclude:"",
-        trashsync:false
+        exclude: "",
+        trashsync: false,
       },
       loading: {
         listTasks: false,
-        setDeleteTask: false
+        setDeleteTask: false,
       },
       error: {
         listTasks: "",
@@ -274,7 +302,12 @@ export default {
     next();
   },
   created() {
+    this.$root.$on("reloadtasks", this.listTasks);
     this.listTasks();
+  },
+  beforeDestroy() {
+    // remove event listener
+    this.$root.$off("reloadtasks");
   },
   methods: {
     async listTasks() {
@@ -319,25 +352,53 @@ export default {
     },
     listTasksCompleted(taskContext, taskResult) {
       let Config = taskResult.output;
+      this.enabled_mailboxes = Config.enabled_mailboxes;
+
       Config.user_properties.forEach((task) => {
-          this.tasks.push({
-            mailbox: task.mailbox,
-            service: task.service_running,
-            remotehostname: task.props.remotehostname,
-            remotepassword: task.props.remotepassword,
-            remoteport: task.props.remoteport,
-            remoteusername: task.props.remoteusername,
-            security: task.props.security,
-            delete: task.props.delete,
-            exclude: task.props.exclude.split('|').filter(value => value.trim() !== '').join('\n'), //filter empty values
-            trashsync: task.props.trashsync
-          });
+        this.tasks.push({
+          localuser: task.localuser,
+          service: task.service_running,
+          remotehostname: task.remotehostname,
+          remotepassword: task.remotepassword,
+          remoteport: task.remoteport,
+          remoteusername: task.remoteusername,
+          security: task.security,
+          delete: task.delete,
+          exclude: task.exclude
+            .split("|")
+            .filter((value) => value.trim() !== "")
+            .join("\n"), //filter empty values
+          trashsync: task.trashsync,
+        });
       });
+
       this.check_tasks = this.tasks.length ? true : false;
       this.loading.listTasks = false;
     },
-    toggleCreateOrEditTask(task) {
+    toggleEditTask(task) {
       this.currentTask = task;
+      this.isEdit = true;
+      if (this.previousValues.Port) {
+        this.currentTask.remoteport = this.previousValues.Port;
+        this.currentTask.security = this.previousValues.Security;
+        this.currentTask.remotehostname = this.previousValues.hostname;
+      }
+      this.showCreateOrEditTask();
+    },
+    toggleCreateTask() {
+      this.isEdit = false;
+
+      this.currentTask.localuser = "";
+      this.currentTask.remoteusername = "";
+      this.currentTask.remotehostname = "";
+      this.currentTask.remotepassword = "";
+      this.currentTask.service = false;
+      this.currentTask.remoteport = "";
+      this.currentTask.security = "";
+      this.currentTask.delete = false;
+      this.currentTask.exclude = "";
+      this.currentTask.trashsync = false;
+      this.currentTask.enabled_mailboxes = this.enabled_mailboxes;
       if (this.previousValues.Port) {
         this.currentTask.remoteport = this.previousValues.Port;
         this.currentTask.security = this.previousValues.Security;
@@ -380,7 +441,7 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            localuser: this.currentTask.mailbox,
+            localuser: this.currentTask.localuser,
           },
           extra: {
             title: this.$t("action." + taskAction),
@@ -428,7 +489,7 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
-            localuser: task.mailbox,
+            localuser: task.localuser,
           },
           extra: {
             title: this.$t("action." + taskAction),
@@ -455,64 +516,6 @@ export default {
       this.loading.toggleActionTask = false;
       this.listTasks();
     },
-    async createTask() {
-      this.loading.createTask = true;
-      this.error.createTask = "";
-      const taskAction = "create-task";
-      const eventId = this.getUuid();
-      // register to task error
-      this.core.$root.$once(
-        `${taskAction}-aborted-${eventId}`,
-        this.setCreateTaskAborted
-      );
-      // register to task completion
-      this.core.$root.$once(
-        `${taskAction}-completed-${eventId}`,
-        this.setCreateTaskCompleted
-      );
-      const res = await to(
-        this.createModuleTaskForApp(this.instanceName, {
-          action: taskAction,
-          data: {
-            localuser: this.currentTask.mailbox,
-            remotehostname: this.currentTask.remotehostname,
-            remotepassword: this.currentTask.remotepassword,
-            remoteport: Number(this.currentTask.remoteport),
-            remoteusername: this.currentTask.remoteusername,
-            security: this.currentTask.security,
-            delete: this.currentTask.delete,
-            exclude: this.currentTask.exclude.split('\n').map(item => item.trim()).join(','),
-            trashsync: this.currentTask.trashsync
-          },
-          extra: {
-            title: this.$t("action." + taskAction),
-            isNotificationHidden: true,
-            eventId,
-          },
-        })
-      );
-      const err = res[0];
-      this.previousValues.Port = this.currentTask.remoteport;
-      this.previousValues.Security = this.currentTask.security;
-      this.previousValues.hostname = this.currentTask.remotehostname;
-      if (err) {
-        console.error(`error creating task ${taskAction}`, err);
-        this.error.setCreateTask = this.getErrorMessage(err);
-        this.loading.setCreateTask = false;
-        return;
-      }
-      // this.hideCreateOrEditTask();
-    },
-    setCreateTaskAborted(taskResult, taskContext) {
-      console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.setCreateTask = this.$t("error.generic_error");
-      this.loading.setCreateTask = false;
-    },
-    setCreateTaskCompleted() {
-      this.loading.setCreateTask = false;
-      this.hideCreateOrEditTask();
-      this.listTasks();
-    },
     async startAllTasks() {
       this.loading.startAllTasks = true;
       this.error.startAllTasks = "";
@@ -531,8 +534,7 @@ export default {
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
-          data: {
-          },
+          data: {},
           extra: {
             title: this.$t("action." + taskAction),
             isNotificationHidden: true,
@@ -576,8 +578,7 @@ export default {
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
-          data: {
-          },
+          data: {},
           extra: {
             title: this.$t("action." + taskAction),
             isNotificationHidden: true,
@@ -618,10 +619,16 @@ export default {
 .mg-top {
   margin-top: 1em;
 }
+.mg-bottom {
+  margin-top: 1em;
+}
 .mg-left {
   margin-left: 1em;
 }
 .gray {
   color: #525252;
+}
+.kebab-height {
+  height: 3rem;
 }
 </style>

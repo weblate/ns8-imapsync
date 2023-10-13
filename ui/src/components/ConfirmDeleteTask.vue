@@ -4,13 +4,14 @@
 -->
 <template>
   <NsModal
+    kind="danger"
     size="default"
     :visible="isShown"
     @modal-hidden="$emit('hide')"
     @primary-click="$emit('confirm')"
   >
     <template slot="title"
-      >{{ $t("tasks.delete_task") }}: {{ task.mailbox }}</template
+      >{{ $t("tasks.delete_task") }}: {{ task.localuser }}</template
     >
     <template slot="content">
       <div>{{ $t("tasks.confirm_delete_task_message") }}</div>

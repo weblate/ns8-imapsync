@@ -32,7 +32,7 @@
         @click="goToAppPage(instanceName, 'tasks')"
         :class="{ 'current-page': isLinkActive('tasks') }"
       >
-        <template v-slot:nav-icon><TaskSettings20 /></template>
+        <template v-slot:nav-icon><ArrowsHorizontal20 /></template>
         <span>{{ $t("tasks.title") }}</span>
       </cv-side-nav-link>
       <cv-side-nav-link
@@ -50,7 +50,7 @@
 import Settings20 from "@carbon/icons-vue/es/settings/20";
 import Information20 from "@carbon/icons-vue/es/information/20";
 import Activity20 from "@carbon/icons-vue/es/activity/20";
-import TaskSettings20 from "@carbon/icons-vue/es/task--settings/20";
+import ArrowsHorizontal20 from "@carbon/icons-vue/es/arrows--horizontal/20";
 import { mapState } from "vuex";
 import { QueryParamService, UtilService } from "@nethserver/ns8-ui-lib";
 
@@ -60,7 +60,7 @@ export default {
     Settings20,
     Information20,
     Activity20,
-    TaskSettings20
+    ArrowsHorizontal20
   },
   mixins: [QueryParamService, UtilService],
   data() {
