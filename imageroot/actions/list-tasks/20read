@@ -28,6 +28,7 @@ mail_server = os.getenv("MAIL_SERVER", "") # the value is the Mail module UUID!
 # read env files, test if mailbox is enabled to push to config[user_properties]
 if mail_server == "":
     config['user_properties'] = []
+    config['enabled_mailboxes'] = []
 else: 
     # retrieve mail module_id from module_uuid
     mail_server = os.environ["MAIL_SERVER"]
@@ -40,80 +41,61 @@ else:
     user_mailboxes = response['output']['user_mailboxes']
     
     # Create a dictionary to store enabled user mailboxes
-    enabled_mailboxes = []
+    config['enabled_mailboxes'] = []
     
     # Iterate through user_mailboxes and filter by 'enabled' (if the field exists)
     for mailbox in user_mailboxes:
         if 'enabled' in mailbox and not mailbox['enabled']:
             continue  # Skip disabled mailboxes
-        enabled_mailboxes.append(mailbox['user'])
+        if os.path.exists("imapsync/"+mailbox['user']+".env"):
+            continue
+
+        box = {
+                "name": mailbox['user'],
+                "label": mailbox['user'],
+                "value": mailbox['user']
+            }
+        config['enabled_mailboxes'].append(box)
     
     
     # we load env file from imapsync/*.env and remote password
     user_properties = []
-    # Try if user with enabled mailbox are configured in env file except with default value
-    for user in enabled_mailboxes:
-        env_files = list(glob.iglob("imapsync/*.env"))
-        try:
-            # test if enabled_mailbox match glob env file except to default value
-            position = env_files.index('imapsync/'+user+'.env')
-            # Read the environment variables from the file
-            data = agent.read_envfile('imapsync/'+user+'.env')
-            # we want minor keys
-            data = {key.lower(): value for key, value in data.items()}
-            # Initialize an empty env_vars and empty tmp_env to store vars from json obj read_envfile
-            env_vars ={}
-            tmp_env = {}
-            
-            # Parse the environment variables from the file
-            if "security" in data and data["security"] == "--tls1":
-                data["security"] = "tls"
-            elif "security" in data and data["security"] == "--ssl1":
-                data["security"] = "ssl"
-            elif "security" in data and data["security"] == "":
-                data["security"] = ""
-            if "delete" in data and data["delete"] == "--delete2":
-                data["delete"] = True
-            elif "delete" in data and data["delete"] == "":
-                data["delete"] = False
-
-            if "exclude" in data and '|^Trash|^Deleted Items' in data["exclude"]:
-                data["trashsync"] = False
-                data["exclude"] = data["exclude"].removesuffix('|^Trash|^Deleted Items')
-            elif "exclude" in data and '|^Trash|^Deleted Items' not in data["exclude"]:
-                data["trashsync"] = True
-
-            tmp_env.update(data)
-            # remote password (single line)
-            with open('imapsync/'+user+'.pwd', 'r') as file:
-                env_lines = file.readlines()
-            for line in env_lines:
-                tmp_env.update({'remotepassword':line})
-            #test if service is running 
-            service = subprocess.call(["systemctl", "is-active","--user", "--quiet", "imapsync@"+user+".service"])
-            service_status = True if service == 0 else False
+    env_files = list(glob.iglob("imapsync/*.env"))
+    for user in env_files:
+        user = user.removesuffix('.env').removeprefix('imapsync/')
+        data = agent.read_envfile('imapsync/'+user+'.env')
+        # we want minor keys
+        data = {key.lower(): value for key, value in data.items()}
+             
+        if "security" in data and data["security"] == "--tls1":
+            data["security"] = "tls"
+        elif "security" in data and data["security"] == "--ssl1":
+            data["security"] = "ssl"
+        elif "security" in data and data["security"] == "":
+            data["security"] = ""
+        if "delete" in data and data["delete"] == "--delete2":
+            data["delete"] = True
+        elif "delete" in data and data["delete"] == "":
+            data["delete"] = False
     
-            # load the tmp_env to list
-            env_vars.update(tmp_env)
-            # Create a JSON read_fileect containing the list of environment variables
-            user_properties.append({"props": env_vars, "mailbox":user, "service_running":service_status})
+        if "exclude" in data and '|^Trash|^Deleted Items' in data["exclude"]:
+            data["trashsync"] = False
+            data["exclude"] = data["exclude"].removesuffix('|^Trash|^Deleted Items')
+        elif "exclude" in data and '|^Trash|^Deleted Items' not in data["exclude"]:
+            data["trashsync"] = True
     
-        except ValueError:
-            user_properties.append({"props":
-                {
-                    "localuser": user,
-                    "remoteusername":"",
-                    "remotehostname": "",
-                    "remoteport": "",
-                    "security":"", 
-                    "delete":False,
-                    "trashsync": False,
-                    "exclude":"",
-                    "remotepassword":""
-                }, 
-                    "mailbox":user,
-                    "service_running":False
-                })
+        # remote password (single line)
+        with open('imapsync/'+user+'.pwd', 'r') as file:
+            env_lines = file.readlines()
+        for line in env_lines:
+            data['remotepassword']=line
+        #test if service is running 
+        service = subprocess.call(["systemctl", "is-active","--user", "--quiet", "imapsync@"+user+".service"])
+        service_status = True if service == 0 else False
+       
+        data["service_running"]=service_status
+        user_properties.append(data)
+    
     # Serialize the JSON read_fileect to a JSON-formatted string
     config['user_properties'] = user_properties
 
