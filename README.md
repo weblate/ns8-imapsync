@@ -45,7 +45,7 @@ Example:
     api-cli run module/imapsync1/create-task --data '{
         "localuser":"administrator",
         "remotehostname":"imap.foo.com",
-        "remoteport":"143",
+        "remoteport":143,
         "security":"tls",
         "delete": false,
         "trashsync":false,
