@@ -20,6 +20,7 @@ buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache imapsync
 EOF
+buildah add "${container}" imapsync/ /
 # Commit the image
 buildah commit --rm "${container}" "${repobase}/${reponame}"
 

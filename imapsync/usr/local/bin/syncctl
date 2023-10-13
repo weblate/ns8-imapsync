@@ -1,0 +1,63 @@
+#!/bin/ash
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# control imapsync : syncctl {start,status,stop} username
+# start : start the sync for the user username
+# status : display the state (Running, Stopped) of the sync for the user username
+# stop : stop the sync for the user username
+# validate: validate the settings by trying to just login to imapsync and quit
+
+# shellcheck shell=dash
+
+set -e
+
+if [[ $# -ne 2 ]];then
+    echo "Usage: syncctl {start,status,stop,validate} username"
+    exit 0
+fi
+action=${1}
+user=${2/imapsync@/}
+
+source /etc/imapsync/${user}.env
+
+
+if [[ "$action" == "start" ]]; then
+    # source breaks with `|`
+    exclude_regex=$(echo "$EXCLUDE" | tr ',' '|')
+
+    flock -x -n "/etc/imapsync/${user}.lock" \
+        /usr/bin/imapsync --pidfile "/etc/imapsync/${user}.pid" --nolog \
+        --noauthmd5 --noreleasecheck --allowsizemismatch \
+        --skipsize --nofoldersizes "${DELETE}" "${DELETEFOLDERS}" \
+        --fastio1 --fastio2 --buffersize 8192000 \
+        --host1 "${REMOTEHOSTNAME}"  --user1 "${REMOTEUSERNAME}"  \
+        --passfile1 "/etc/imapsync/${user}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  \
+        --host2 "${MAIL_HOSTNAME}"  --user2 "${LOCALUSER}*vmail" \
+        --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
+        --exclude "^Public$|^Shared$|"${exclude_regex}""
+
+elif [[ "$action" == "stop" ]];then
+    if [[ -f "/etc/imapsync/${user}.pid" ]]; then  
+        kill "$(cat "/etc/imapsync/${user}.pid")"
+    else
+        echo "Not Running"
+    fi
+
+elif [[ "$action" == "status" ]];then
+    if [[ -f "/etc/imapsync/${user}.pid" ]];then
+        echo 'Running'
+    else
+        echo 'Stopped'
+    fi
+elif [[ "$action" == "validation" ]];then
+     /usr/bin/imapsync  --nolog \
+        --host1 "${REMOTEHOSTNAME}"  --user1 "${REMOTEUSERNAME}"  \
+        --passfile1 "/etc/imapsync/${user}.pwd"--port1 "${REMOTEPORT}" "${SECURITY}"  \
+        --host2 "${MAIL_HOSTNAME}"  --user2 "${LOCALUSER}*vmail" \
+        --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
+        --justlogin --timeout 10 > /dev/null
+fi
