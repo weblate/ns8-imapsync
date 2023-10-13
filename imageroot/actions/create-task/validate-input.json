@@ -36,6 +36,12 @@
             "description": "Local user of the local account",
             "minLength": 1
         },
+        "remotepassword": {
+            "type": "string",
+            "title": "Remote Password",
+            "description": "Password of the remote user",
+            "minLength": 1
+        },
         "remoteusername": {
             "type": "string",
             "title": "Remote User",
