@@ -28,19 +28,28 @@ else:
     security = ""
 
 # delete on local host folder/emails not on remote
-delete = data.get("delete",False)
-if delete:
-    delete = "--delete2"
+delete_local = data.get("delete_local",False)
+# delete on remote once migrated
+delete_remote = data.get("delete_remote",False)
+if delete_local:
+    delete_local = "--delete2"
     delete_folder = "--delete2foders"
 else:
-    delete = ""
+    delete_local = ""
     delete_folder = ""
 
-# exclude file if string,string2 or trashsync == disabled
-exclude = data.get("exclude",'')
-trashsync= data.get("trashsync",False)
-if not trashsync:
-    exclude = exclude + ',Trash,Deleted Items' 
+if delete_remote:
+    delete_remote = "--delete1"
+    expunge_remote = "--noexpungeaftereach"
+else:
+    delete_remote = ""
+    expunge_remote = ""
+
+# exclude file if string,string2 
+if data.get("exclude",'') == "":
+    exclude = ''
+else:
+    exclude = ","+ data.get("exclude",'')
 
 user_env = f"""
 LOCALUSER={localuser}
@@ -48,9 +57,11 @@ REMOTEUSERNAME={remoteusername}
 REMOTEHOSTNAME={remotehostname}
 REMOTEPORT={remoteport}
 SECURITY={security}
-DELETE={delete}
+DELETE_LOCAL={delete_local}
 DELETEFOLDER={delete_folder}
 EXCLUDE={exclude}
+DELETE_REMOTE={delete_remote}
+EXPUNGE_REMOTE={expunge_remote}
 """
 os.umask(0o77)
 
@@ -61,3 +72,19 @@ f.close()
 f = open("./imapsync/"+localuser+".pwd", "w", encoding="utf-8")
 f.write(remotepassword)
 f.close()
+
+# cron
+cron = data.get("cron","")
+if cron != "":
+    if 'h' in cron:
+        cron_env = "1 */"+cron.replace('h','')+" * * *  root /usr/local/bin/syncctl start "+localuser
+    elif 'm' in cron:
+        cron_env = "*/"+cron.replace('m','')+" * * * * root /usr/local/bin/syncctl start "+localuser
+    f = open("./cron/"+localuser+".cron", "w", encoding="utf-8")
+    # MAIL_HOSTNAME is an env variable used by perl/imapsync 
+    f.write('MAIL_HOSTNAME="${MAIL_HOSTNAME}"'+"\n")
+    f.write(cron_env+"\n")
+    f.close()
+# cron does not exist we remove or ignore
+elif cron == "" and os.path.exists("./cron/"+localuser+".cron"):
+    os.remove("./cron/"+localuser+".cron")

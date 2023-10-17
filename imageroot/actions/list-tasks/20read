@@ -73,16 +73,14 @@ else:
             data["security"] = "ssl"
         elif "security" in data and data["security"] == "":
             data["security"] = ""
-        if "delete" in data and data["delete"] == "--delete2":
-            data["delete"] = True
-        elif "delete" in data and data["delete"] == "":
-            data["delete"] = False
-    
-        if "exclude" in data and 'Trash,Deleted Items' in data["exclude"]:
-            data["trashsync"] = False
-            data["exclude"] = data["exclude"].removesuffix('Trash,Deleted Items')
-        elif "exclude" in data and 'Trash,Deleted Items' not in data["exclude"]:
-            data["trashsync"] = True
+        if "delete_local" in data and data["delete_local"] == "--delete2":
+            data["delete_local"] = True
+        elif "delete_local" in data and data["delete_local"] == "":
+            data["delete_local"] = False
+        if "delete_remote" in data and data["delete_remote"] == "--delete1":
+            data["delete_remote"] = True
+        elif "delete_remote" in data and data["delete_remote"] == "":
+            data["delete_remote"] = False
     
         # remote password (single line)
         with open('imapsync/'+user+'.pwd', 'r') as file:

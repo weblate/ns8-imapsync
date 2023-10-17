@@ -11,9 +11,10 @@
             "remotepassword": "password",
             "remoteport": 143,
             "security": "tls",
-            "delete": true,
-            "trashsync": true,
-            "exclude": "folder1,folder2"
+            "delete_local": true,
+            "exclude": "folder1,folder2",
+            "delete_remote": false,
+            "cron":"5m"
         }
     ],
     "type": "object",
@@ -24,12 +25,19 @@
         "remotepassword",
         "remoteport",
         "security",
-        "delete",
-        "trashsync",
-        "exclude"
+        "delete_local",
+        "exclude",
+        "delete_remote",
+        "cron"
     ],
     "additionalProperties": false,
     "properties": {
+        "cron": {
+            "type": "string",
+            "title": "Cron task",
+            "description": "Start a task by a cron",
+            "minLength": 1
+        },
         "localuser": {
             "type": "string",
             "title": "Local User",
@@ -78,15 +86,15 @@
                 "ssl"
             ]
         },
-        "delete": {
+        "delete_local": {
             "type": "boolean",
             "title": "Delete Email",
-            "description": "delete Email not on remote server"
+            "description": "delete Email not on local server"
         },
-        "trashsync": {
+        "delete_remote": {
             "type": "boolean",
-            "title": "Synchronize trash",
-            "description": "Synchronize deleted email on remote server"
+            "title": "Delete Email on remote",
+            "description": "delete Email on remote server after sync"
         },
         "exclude": {
             "title": "exclude",
