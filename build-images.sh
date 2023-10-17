@@ -18,7 +18,7 @@ reponame="imapsync-binary"
 container=$(buildah from docker.io/library/alpine:${alpine_version})
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
-apk add --no-cache imapsync
+apk add --no-cache imapsync cronie
 EOF
 buildah add "${container}" imapsync/ /
 # Commit the image

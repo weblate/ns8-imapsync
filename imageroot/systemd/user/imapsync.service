@@ -9,6 +9,9 @@
 #
 [Unit]
 Description=imapsync server
+#
+# Start the session of rootless modules after Redis
+#
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -17,6 +20,7 @@ WorkingDirectory=%S/state
 Restart=always
 ExecStartPre=/bin/rm -f %t/imapsync.pid %t/imapsync.ctr-id
 ExecStartPre=mkdir -vp %S/state/imapsync
+ExecStartPre=mkdir -vp %S/state/cron
 ExecStartPre=runagent reveal-master-secret
 ExecStart=/usr/bin/podman run \
     --detach \
@@ -26,7 +30,8 @@ ExecStart=/usr/bin/podman run \
     --replace --name=%N \
     --env MAIL_HOSTNAME=${MAIL_HOSTNAME} \
     --volume ./imapsync:/etc/imapsync:z \
-    ${IMAPSYNC_BINARY_IMAGE} /usr/sbin/crond -f -l 8
+    --volume ./cron:/etc/cron.d:z \
+    ${IMAPSYNC_BINARY_IMAGE} /usr/sbin/crond -f -m off
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/imapsync.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/imapsync.ctr-id
 PIDFile=%t/imapsync.pid
