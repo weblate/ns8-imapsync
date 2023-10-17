@@ -51,28 +51,6 @@ if data.get("exclude",'') == "":
 else:
     exclude = ","+ data.get("exclude",'')
 
-user_env = f"""
-LOCALUSER={localuser}
-REMOTEUSERNAME={remoteusername}
-REMOTEHOSTNAME={remotehostname}
-REMOTEPORT={remoteport}
-SECURITY={security}
-DELETE_LOCAL={delete_local}
-DELETEFOLDER={delete_folder}
-EXCLUDE={exclude}
-DELETE_REMOTE={delete_remote}
-EXPUNGE_REMOTE={expunge_remote}
-"""
-os.umask(0o77)
-
-f = open("./imapsync/"+localuser+".env", "w", encoding="utf-8")
-f.write(user_env)
-f.close()
-
-f = open("./imapsync/"+localuser+".pwd", "w", encoding="utf-8")
-f.write(remotepassword)
-f.close()
-
 # cron
 cron = data.get("cron","")
 if cron != "":
@@ -88,3 +66,28 @@ if cron != "":
 # cron does not exist we remove or ignore
 elif cron == "" and os.path.exists("./cron/"+localuser+".cron"):
     os.remove("./cron/"+localuser+".cron")
+
+
+user_env = f"""
+LOCALUSER={localuser}
+REMOTEUSERNAME={remoteusername}
+REMOTEHOSTNAME={remotehostname}
+REMOTEPORT={remoteport}
+SECURITY={security}
+DELETE_LOCAL={delete_local}
+DELETEFOLDER={delete_folder}
+EXCLUDE={exclude}
+DELETE_REMOTE={delete_remote}
+EXPUNGE_REMOTE={expunge_remote}
+CRON={cron}
+"""
+os.umask(0o77)
+
+f = open("./imapsync/"+localuser+".env", "w", encoding="utf-8")
+f.write(user_env)
+f.close()
+
+f = open("./imapsync/"+localuser+".pwd", "w", encoding="utf-8")
+f.write(remotepassword)
+f.close()
+
