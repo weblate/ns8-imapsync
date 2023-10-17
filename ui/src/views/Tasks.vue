@@ -270,6 +270,7 @@ export default {
         delete_local: false,
         delete_remote: false,
         exclude: "",
+        cron: ""
       },
       loading: {
         listTasks: false,
@@ -365,6 +366,7 @@ export default {
           security: task.security,
           delete_local: task.delete_local,
           delete_remote: task.delete_remote,
+          cron: task.cron,
           exclude: task.exclude
             .split(",")
             .filter((value) => value.trim() !== "")
@@ -398,6 +400,7 @@ export default {
       this.currentTask.delete_local = false;
       this.currentTask.delete_remote = false;
       this.currentTask.exclude = "";
+      this.currentTask.cron = "";
       this.currentTask.enabled_mailboxes = this.enabled_mailboxes;
       if (this.previousValues.Port) {
         this.currentTask.remoteport = this.previousValues.Port;

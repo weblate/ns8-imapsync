@@ -10,10 +10,7 @@
     @primary-click="createTask"
   >
     <template slot="title"
-      >{{
-        !isEdit
-          ? $t("tasks.create_task") + " "
-          : $t("tasks.edit_task") + " "
+      >{{ !isEdit ? $t("tasks.create_task") + " " : $t("tasks.edit_task") + " "
       }}{{ task.localuser }}</template
     >
     <template slot="content">
@@ -79,6 +76,42 @@
           }}</cv-dropdown-item>
           <cv-dropdown-item value="ssl">{{
             $t("tasks.use_imaps_default_993/tcp")
+          }}</cv-dropdown-item>
+        </cv-dropdown>
+        <cv-text-area
+          :label="$t('tasks.exclude_folder')"
+          v-model.trim="task.exclude"
+          ref="exclude"
+          :placeholder="$t('tasks.write_one_exclusion_per_line')"
+        >
+        </cv-text-area>
+        <cv-dropdown
+          :light="true"
+          :value="task.cron"
+          v-model="task.cron"
+          :up="false"
+          :inline="false"
+          :helper-text="$t('tasks.set_when_you_want_the_task_start')"
+          :hide-selected="false"
+          :label="$t('tasks.select_your_cron')"
+        >
+          <cv-dropdown-item selected value="">{{
+            $t("tasks.no_cron")
+          }}</cv-dropdown-item>
+          <cv-dropdown-item value="5m">5 {{
+            $t("tasks.minutes")
+          }}</cv-dropdown-item>
+          <cv-dropdown-item value="15m">15 {{
+            $t("tasks.minutes")
+          }}</cv-dropdown-item>
+          <cv-dropdown-item value="30m">30 {{
+            $t("tasks.minutes")
+          }}</cv-dropdown-item>
+          <cv-dropdown-item value="45m">45 {{
+            $t("tasks.minutes")
+          }}</cv-dropdown-item>
+         <cv-dropdown-item value="1h">1 {{
+            $t("tasks.hour")
           }}</cv-dropdown-item>
         </cv-dropdown>
         <cv-text-area
@@ -199,6 +232,7 @@ export default {
               .split("\n")
               .map((item) => item.trim())
               .join(","),
+            cron: this.task.cron,
           },
           extra: {
             title: this.$t("action." + taskAction),
@@ -225,7 +259,7 @@ export default {
     },
     setCreateTaskCompleted() {
       this.loading.setCreateTask = false;
-      this.task.localuser =="";
+      this.task.localuser == "";
       this.$emit("hide");
       this.$emit("reloadtasks");
     },
