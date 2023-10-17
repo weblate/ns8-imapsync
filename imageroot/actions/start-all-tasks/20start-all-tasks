@@ -10,4 +10,4 @@ import agent
 
 for file in glob.iglob("imapsync/*.env"):
     localuser = file.removeprefix('imapsync/').removesuffix('.env')
-    agent.run_helper("run-imapsync", "restart", localuser).check_returncode()
+    agent.run_helper("run-imapsync", "restart", localuser)
