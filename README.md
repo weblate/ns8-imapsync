@@ -33,11 +33,14 @@ The above command will:
 ## start to sync a remote imap account to local user account
 
 security : "tls" or "ssl" or ""
-trashsync: true, false
--  delete mails and folder on local account not in remote account
-delete: true, false
+- delete mails and folder on local account not in remote account
+delete_local: true, false
+- delete mails on remote account once synchronized to localaccount
+delete_remote: true, false
 - exclude folders prepend by `^` and end by `$`
 exclude: folder1,folder2,^folder3$
+- start tasks by a cron (use 5m for minute, 2h for hour: start a cron `0/5 * * * *` or `1 */2 * * *`)
+cron: 5m
 - the remote imap account credentials (you can use the password of the imap master administrator if you know it, for example vmail. use the login user*vmail and the relevant password). Otherwise use the login and the password of the remote account.
 
 Example:
@@ -47,11 +50,12 @@ Example:
         "remotehostname":"imap.foo.com",
         "remoteport":143,
         "security":"tls",
-        "delete": false,
-        "trashsync":false,
+        "delete_local": false,
+        "delete_remote": false,
         "exclude":"folder1,folder2",
         "remoteusername":"username",
-        "remotepassword":"password"
+        "remotepassword":"password",
+        "cron":"5m"
     }'
 
 ## delete env and stop a running synchronisation
@@ -130,10 +134,11 @@ api-cli run module/imapsync1/list-tasks
         "remotehostname": "imap.foo.com",
         "remoteport": "143",
         "security": "tls",
-        "delete": true,
-        "trashsync": true,
+        "delete_local": true,
+        "delete_remote": false,
         "exclude": "|folder1|folder2",
-        "remotepassword": "password"
+        "remotepassword": "password",
+        "cron": "5m"
       },
       "mailbox": "administrator",
       "service_running": false
@@ -145,10 +150,11 @@ api-cli run module/imapsync1/list-tasks
         "remotehostname": "",
         "remoteport": "",
         "security": "",
-        "delete": false,
-        "trashsync": false,
+        "delete_local": false,
+        "delete_local": true,
         "exclude": "",
-        "remotepassword": ""
+        "remotepassword": "",
+        "cron": "2h"
       },
       "mailbox": "foo",
       "service_running": false
