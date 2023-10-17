@@ -3,20 +3,6 @@ Description=imapsync for %i
 
 [Service]
 Environment=PODMAN_SYSTEMD_UNIT=%n
-EnvironmentFile=%S/state/imapsync/%i.env
-EnvironmentFile=%S/state/environment
-WorkingDirectory=%S/state/imapsync
-ExecStartPre=/usr/bin/mkdir -p %S/state/imapsync
-ExecStart=/usr/bin/podman exec \
-    imapsync  \
-    /usr/bin/imapsync  \
-    --noauthmd5 --noreleasecheck --allowsizemismatch \
-    --skipsize --nofoldersizes ${DELETE} ${DELETEFOLDERS} \
-    --fastio1 --fastio2 --buffersize 8192000 \
-    --host1 ${REMOTEHOSTNAME}  --user1 ${REMOTEUSERNAME}  \
-    --passfile1 /etc/imapsync/%i.pwd --port1 ${REMOTEPORT} ${SECURITY}  \
-    --host2 ${MAIL_HOSTNAME}  --user2 ${LOCALUSER}*vmail \
-    --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
-    --exclude ^(Public|Shared${EXCLUDE})$
+ExecStart=/usr/bin/podman exec imapsync /usr/local/bin/syncctl start %i
 Type=simple
 SyslogIdentifier=%N
