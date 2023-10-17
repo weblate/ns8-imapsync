@@ -267,9 +267,9 @@ export default {
         service: false,
         remoteport: "",
         security: "",
-        delete: false,
+        delete_local: false,
+        delete_remote: false,
         exclude: "",
-        trashsync: false,
       },
       loading: {
         listTasks: false,
@@ -363,12 +363,12 @@ export default {
           remoteport: task.remoteport,
           remoteusername: task.remoteusername,
           security: task.security,
-          delete: task.delete,
+          delete_local: task.delete_local,
+          delete_remote: task.delete_remote,
           exclude: task.exclude
             .split(",")
             .filter((value) => value.trim() !== "")
             .join("\n"), //filter empty values
-          trashsync: task.trashsync,
         });
       });
 
@@ -395,9 +395,9 @@ export default {
       this.currentTask.service = false;
       this.currentTask.remoteport = "";
       this.currentTask.security = "";
-      this.currentTask.delete = false;
+      this.currentTask.delete_local = false;
+      this.currentTask.delete_remote = false;
       this.currentTask.exclude = "";
-      this.currentTask.trashsync = false;
       this.currentTask.enabled_mailboxes = this.enabled_mailboxes;
       if (this.previousValues.Port) {
         this.currentTask.remoteport = this.previousValues.Port;

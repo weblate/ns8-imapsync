@@ -63,7 +63,6 @@
     "write_one_exclusion_per_line": "Write one exclusion per line",
     "delete_on_local": "Delete on local",
     "delete_tips": "Delete local emails and folders not present on the remote IMAP account",
-    "trashsync": "Sync trash",
     "trashsync_tips": "Synchronize the deleted emails and folders on the remote server",
     "enabled": "Enabled",
     "disabled": "Disabled",

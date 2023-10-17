@@ -91,10 +91,10 @@
         <NsToggle
           :label="$t('tasks.delete_on_local')"
           class="mg-left"
-          value="delete"
+          value="delete_local"
           :form-item="true"
-          v-model="task.delete"
-          ref="delete"
+          v-model="task.delete_local"
+          ref="delete_local"
         >
           <template slot="tooltip">
             <span v-html="$t('tasks.delete_tips')"></span>
@@ -103,15 +103,15 @@
           <template slot="text-right">{{ $t("tasks.enabled") }}</template>
         </NsToggle>
         <NsToggle
-          :label="$t('tasks.trashsync')"
+          :label="$t('tasks.delete_on_remote')"
           class="mg-left"
-          value="trashsync"
+          value="delete_local"
           :form-item="true"
-          v-model="task.trashsync"
-          ref="trashsync"
+          v-model="task.delete_remote"
+          ref="delete_remote"
         >
           <template slot="tooltip">
-            <span v-html="$t('tasks.trashsync_tips')"></span>
+            <span v-html="$t('tasks.delete_remote_tips')"></span>
           </template>
           <template slot="text-left">{{ $t("tasks.disabled") }}</template>
           <template slot="text-right">{{ $t("tasks.enabled") }}</template>
@@ -193,12 +193,12 @@ export default {
             remoteport: Number(this.task.remoteport),
             remoteusername: this.task.remoteusername,
             security: this.task.security,
-            delete: this.task.delete,
+            delete_local: this.task.delete_local,
+            delete_remote: this.task.delete_remote,
             exclude: this.task.exclude
               .split("\n")
               .map((item) => item.trim())
               .join(","),
-            trashsync: this.task.trashsync,
           },
           extra: {
             title: this.$t("action." + taskAction),
