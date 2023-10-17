@@ -20,7 +20,7 @@ if [[ $# -ne 2 ]];then
     exit 0
 fi
 action=${1}
-user=${2/imapsync@/}
+user=${2}
 
 source /etc/imapsync/${user}.env
 
@@ -32,13 +32,13 @@ if [[ "$action" == "start" ]]; then
     flock -x -n "/etc/imapsync/${user}.lock" \
         /usr/bin/imapsync --pidfile "/etc/imapsync/${user}.pid" --nolog \
         --noauthmd5 --noreleasecheck --allowsizemismatch \
-        --skipsize --nofoldersizes "${DELETE}" "${DELETEFOLDERS}" \
+        --skipsize --nofoldersizes "${DELETE_LOCAL}" "${DELETEFOLDERS}" "${DELETE_REMOTE}" "${EXPUNGE_REMOTE}" \
         --fastio1 --fastio2 --buffersize 8192000 \
         --host1 "${REMOTEHOSTNAME}"  --user1 "${REMOTEUSERNAME}"  \
         --passfile1 "/etc/imapsync/${user}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  \
         --host2 "${MAIL_HOSTNAME}"  --user2 "${LOCALUSER}*vmail" \
         --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
-        --exclude "^Public$|^Shared$|"${exclude_regex}""
+        --exclude "^Public$|^Shared$"${exclude_regex}"" > /proc/$(cat /var/run/crond.pid)/fd/1 2>&1
 
 elif [[ "$action" == "stop" ]];then
     if [[ -f "/etc/imapsync/${user}.pid" ]]; then  
