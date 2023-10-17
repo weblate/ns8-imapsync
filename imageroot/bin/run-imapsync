@@ -10,10 +10,11 @@
 action=${1:-}
 localuser=${2:-}
 
-# The UI expects a quick answer if started of failed to start, we cannot use podman directly here
-if [[ "$action" == 'start' || "$action" == "restart" ]];then
-    /usr/bin/systemctl --user "${action}" imapsync@${localuser}.service
-# systemd does not trigger a stop signal if the task has not be started by systemd because the service is already stopped 
+if [[ "$action" == 'start' ]];then
+    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl start "$localuser"
+elif [[ "$action" == 'restart' ]];then
+    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl stop "$localuser"
+    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl start "$localuser"
 elif [[ "$action" == 'stop' ]];then
     /usr/bin/podman exec imapsync /usr/local/bin/syncctl stop "$localuser"
 fi

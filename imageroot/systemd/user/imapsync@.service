@@ -1,8 +1,0 @@
-[Unit]
-Description=imapsync for %i
-
-[Service]
-Environment=PODMAN_SYSTEMD_UNIT=%n
-ExecStart=/usr/bin/podman exec imapsync /usr/local/bin/syncctl start %i
-Type=simple
-SyslogIdentifier=%N
