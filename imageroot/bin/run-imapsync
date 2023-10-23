@@ -8,13 +8,13 @@
 # helper to trigger users task. we need two arguments
 
 action=${1:-}
-localuser=${2:-}
+task_id=${2:-}
 
 if [[ "$action" == 'start' ]];then
-    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl start "$localuser"
+    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl start "$task_id"
 elif [[ "$action" == 'restart' ]];then
-    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl stop "$localuser"
-    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl start "$localuser"
+    /usr/bin/podman exec imapsync /usr/local/bin/syncctl stop "$task_id"
+    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl start "$task_id"
 elif [[ "$action" == 'stop' ]];then
-    /usr/bin/podman exec imapsync /usr/local/bin/syncctl stop "$localuser"
+    /usr/bin/podman exec imapsync /usr/local/bin/syncctl stop "$task_id"
 fi

@@ -14,11 +14,13 @@
             "delete_local": true,
             "exclude": "folder1,folder2",
             "delete_remote": false,
-            "cron":"5m"
+            "cron": "5m",
+            "task_id":""
         }
     ],
     "type": "object",
     "required": [
+        "task_id",
         "localuser",
         "remoteusername",
         "remotehostname",
@@ -36,7 +38,19 @@
             "type": "string",
             "title": "Cron task",
             "description": "Start a task by a cron",
-            "minLength": 1
+            "enum": [
+                "",
+                "5m",
+                "15m",
+                "30m",
+                "45m",
+                "1h"
+            ]
+        },
+        "task_id": {
+            "type": "string",
+            "title": "Task ID",
+            "description": "A local user can run many tasks, we need ID"
         },
         "localuser": {
             "type": "string",

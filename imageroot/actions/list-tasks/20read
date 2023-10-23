@@ -47,23 +47,19 @@ else:
     for mailbox in user_mailboxes:
         if 'enabled' in mailbox and not mailbox['enabled']:
             continue  # Skip disabled mailboxes
-        if os.path.exists("imapsync/"+mailbox['user']+".env"):
-            continue
-
         box = {
                 "name": mailbox['user'],
                 "label": mailbox['user'],
                 "value": mailbox['user']
             }
         config['enabled_mailboxes'].append(box)
-    
-    
+
     # we load env file from imapsync/*.env and remote password
     user_properties = []
     env_files = list(glob.iglob("imapsync/*.env"))
-    for user in env_files:
-        user = user.removesuffix('.env').removeprefix('imapsync/')
-        data = agent.read_envfile('imapsync/'+user+'.env')
+    for task_id in env_files:
+        task_id = task_id.removesuffix('.env').removeprefix('imapsync/')
+        data = agent.read_envfile('imapsync/'+task_id+'.env')
         # we want minor keys
         data = {key.lower(): value for key, value in data.items()}
              
@@ -83,12 +79,12 @@ else:
             data["delete_remote"] = False
     
         # remote password (single line)
-        with open('imapsync/'+user+'.pwd', 'r') as file:
+        with open('imapsync/'+task_id+'.pwd', 'r') as file:
             env_lines = file.readlines()
         for line in env_lines:
             data['remotepassword']=line
         #test if service is running 
-        service_status = True if os.path.exists("imapsync/"+user+".pid") else False
+        service_status = True if os.path.exists("imapsync/"+task_id+".pid") else False
        
         data["service_running"]=service_status
         user_properties.append(data)

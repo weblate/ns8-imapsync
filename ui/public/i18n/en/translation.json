@@ -61,7 +61,7 @@
     "remoteport": "IMAP TCP Port",
     "exclude_folder": "Folders exclusion",
     "write_one_exclusion_per_line": "Write one exclusion per line",
-    "delete_on_local": "Delete on local",
+    "delete_on_local": "Delete Email on local that are not on remote (full clone)",
     "delete_tips": "Delete local emails and folders not present on the remote IMAP account",
     "trashsync_tips": "Synchronize the deleted emails and folders on the remote server",
     "enabled": "Enabled",
@@ -83,7 +83,16 @@
     "minutes":"minutes",
     "no_cron": "No sheduled task",
     "select_your_cron": "Shedule your tasks",
-    "set_when_you_want_the_task_start": "Select when to start your task"
+    "set_when_you_want_the_task_start": "Select when to start your task",
+    "remove_mails":"Email removal",
+    "imapsync_removal_explanation":"Imapsync can remove emails on remote once synchronized on the local server or remove all emails on local that are not on the remote server",
+    "no_deletion":"No deletion",
+    "delete_on_remote":"Delete Email on remote once synchronized",
+    "bad_user_credentials": "Verify the user credentials, the remote server refused to authenticate",
+    "Check_hostname_or_tcp_port": "Verify the Hostname and the TCP port, the remote server refused to authenticate",
+    "SSL_encryption_error":"Verify the TLS encryption, IMAPS of STARTTLS",
+    "localuser_string_gte": "The local username cannot be empty"
+
   },
   "about": {
     "title": "About"

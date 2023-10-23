@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import sys
+import json
+import agent
+import subprocess
+
+agent.set_weight(os.path.basename(__file__), 0)
+data = json.load(sys.stdin)
+# task id
+task_id = data["task_id"]
+# Local user to sync on
+localuser= data["localuser"]
+result = subprocess.run(["podman","exec","imapsync","syncctl", "validation",localuser+'_'+task_id], check=False, capture_output=True, text=True)
+if 'ERR_AUTHENTICATION_FAILURE_USER1' in result.stdout:
+    agent.set_status('validation-failed')
+    json.dump([{'field':'createTask','parameter':'createTask','value':'bad_user_credentials','error':'bad_user_credentials'}],fp=sys.stdout, default=str)
+    sys.exit(2)
+elif 'SSL connect attempt failed' in result.stdout:
+    agent.set_status('validation-failed')
+    json.dump([{'field':'createTask','parameter':'createTask','value':'SSL_encryption_error','error':'SSL_encryption_error'}],fp=sys.stdout, default=str)
+    sys.exit(4)
+elif 'ERR_CONNECTION_FAILURE_HOST1' in result.stdout:
+    agent.set_status('validation-failed')
+    json.dump([{'field':'createTask','parameter':'createTask','value':'Check_hostname_or_tcp_port','error':'Check_hostname_or_tcp_port'}],fp=sys.stdout, default=str)
+    sys.exit(3)

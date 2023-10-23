@@ -6,8 +6,9 @@
   <NsModal
     size="default"
     :visible="isShown"
-    @modal-hidden="$emit('hide')"
+    @modal-hidden="onModalHidden"
     @primary-click="createTask"
+    :primary-button-disabled="loading.createTask"
   >
     <template slot="title"
       >{{ !isEdit ? $t("tasks.create_task") + " " : $t("tasks.edit_task") + " "
@@ -15,27 +16,26 @@
     >
     <template slot="content">
       <cv-form>
-        <template v-if="!isEdit">
-          <NsComboBox
-            v-model.trim="task.localuser"
-            :autoFilter="true"
-            :autoHighlight="true"
-            :title="$t('tasks.local_user')"
-            :label="$t('tasks.choose_local_user')"
-            :options="enabled_mailboxes"
-            :userInputLabel="$t('tasks.choose_local_user')"
-            :acceptUserInput="false"
-            :showItemType="true"
-            :invalid-message="$t(error.enabled_mailboxes)"
-            tooltipAlignment="start"
-            tooltipDirection="top"
-            ref="localuser"
-          >
-            <template slot="tooltip">
-              {{ $t("tasks.choose_the_user_to_sync") }}
-            </template>
-          </NsComboBox>
-        </template>
+        <NsComboBox
+          v-show="!isEdit"
+          v-model.trim="task.localuser"
+          :autoFilter="true"
+          :autoHighlight="true"
+          :title="$t('tasks.local_user')"
+          :label="$t('tasks.choose_local_user')"
+          :options="enabled_mailboxes"
+          :userInputLabel="$t('tasks.choose_local_user')"
+          :acceptUserInput="false"
+          :showItemType="true"
+          :invalid-message="$t(error.enabled_mailboxes)"
+          tooltipAlignment="start"
+          tooltipDirection="top"
+          ref="localuser"
+        >
+          <template slot="tooltip">
+            {{ $t("tasks.choose_the_user_to_sync") }}
+          </template>
+        </NsComboBox>
         <NsTextInput
           v-model.trim="task.remoteusername"
           :label="$t('tasks.remoteusername')"
@@ -98,69 +98,65 @@
           <cv-dropdown-item selected value="">{{
             $t("tasks.no_cron")
           }}</cv-dropdown-item>
-          <cv-dropdown-item value="5m">5 {{
-            $t("tasks.minutes")
-          }}</cv-dropdown-item>
-          <cv-dropdown-item value="15m">15 {{
-            $t("tasks.minutes")
-          }}</cv-dropdown-item>
-          <cv-dropdown-item value="30m">30 {{
-            $t("tasks.minutes")
-          }}</cv-dropdown-item>
-          <cv-dropdown-item value="45m">45 {{
-            $t("tasks.minutes")
-          }}</cv-dropdown-item>
-         <cv-dropdown-item value="1h">1 {{
-            $t("tasks.hour")
-          }}</cv-dropdown-item>
+          <cv-dropdown-item value="5m"
+            >5 {{ $t("tasks.minutes") }}</cv-dropdown-item
+          >
+          <cv-dropdown-item value="15m"
+            >15 {{ $t("tasks.minutes") }}</cv-dropdown-item
+          >
+          <cv-dropdown-item value="30m"
+            >30 {{ $t("tasks.minutes") }}</cv-dropdown-item
+          >
+          <cv-dropdown-item value="45m"
+            >45 {{ $t("tasks.minutes") }}</cv-dropdown-item
+          >
+          <cv-dropdown-item value="1h"
+            >1 {{ $t("tasks.hour") }}</cv-dropdown-item
+          >
         </cv-dropdown>
-        <cv-text-area
-          :label="$t('tasks.exclude_folder')"
-          v-model.trim="task.exclude"
-          ref="exclude"
-          :placeholder="$t('tasks.write_one_exclusion_per_line')"
-        >
-        </cv-text-area>
-        <NsToggle
-          :label="$t('tasks.delete_on_local')"
-          class="mg-left"
-          value="delete_local"
-          :form-item="true"
-          v-model="task.delete_local"
-          ref="delete_local"
-        >
-          <template slot="tooltip">
-            <span v-html="$t('tasks.delete_tips')"></span>
-          </template>
-          <template slot="text-left">{{ $t("tasks.disabled") }}</template>
-          <template slot="text-right">{{ $t("tasks.enabled") }}</template>
-        </NsToggle>
-        <NsToggle
-          :label="$t('tasks.delete_on_remote')"
-          class="mg-left"
-          value="delete_local"
-          :form-item="true"
-          v-model="task.delete_remote"
-          ref="delete_remote"
-        >
-          <template slot="tooltip">
-            <span v-html="$t('tasks.delete_remote_tips')"></span>
-          </template>
-          <template slot="text-left">{{ $t("tasks.disabled") }}</template>
-          <template slot="text-right">{{ $t("tasks.enabled") }}</template>
-        </NsToggle>
+        <span class="mg-bottom">
+          {{ $t("tasks.remove_mails") }}
+          <cv-tooltip
+            alignment="start"
+            direction="bottom"
+            :tip="$t('tasks.imapsync_removal_explanation')"
+            class="info mg-bottom"
+          >
+          </cv-tooltip>
+        </span>
+        <cv-radio-group vertical class="no-mg-bottom mg-left">
+          <cv-radio-button
+            :name="'radio-group-delete_local'"
+            :label="$t('tasks.no_deletion')"
+            value="no_delete"
+            v-model="task.delete"
+          />
+
+          <cv-radio-button
+            :name="'radio-group-delete_local'"
+            :label="$t('tasks.delete_on_remote')"
+            value="delete_remote"
+            v-model="task.delete"
+          />
+          <cv-radio-button
+            :name="'radio-group-delete_remote'"
+            :label="$t('tasks.delete_on_local')"
+            value="delete_local"
+            v-model="task.delete"
+          />
+        </cv-radio-group>
       </cv-form>
-    </template>
-    <cv-row v-if="error.createTaks">
+              <cv-row v-if="error.createTask">
       <cv-column>
         <NsInlineNotification
           kind="error"
-          :title="$t('action.createTask')"
+          :title="$t('tasks.create_task')"
           :description="error.createTask"
           :showCloseButton="false"
         />
       </cv-column>
-    </cv-row>
+          </cv-row>
+    </template>
     <template slot="secondary-button">{{ $t("common.cancel") }}</template>
     <template slot="primary-button">{{ $t("common.save") }}</template>
   </NsModal>
@@ -185,14 +181,13 @@ export default {
     return {
       isValidated: false,
       previousValues: { Port: "", Security: "", hostname: "" },
+      localuser: "",
       loading: {
-        testImap: false,
         createTask: false,
         setCreateTask: false,
       },
       error: {
         enabled_mailboxe: "",
-        testImap: "",
         createTask: "",
       },
     };
@@ -201,15 +196,75 @@ export default {
     ...mapState(["instanceName", "core", "appName"]),
   },
   methods: {
+    validateConfigureModule() {
+      this.clearErrors(this);
+
+      let isValidationOk = true;
+      if (!this.task.remoteusername) {
+        this.error.host = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("remoteusername");
+        }
+        isValidationOk = false;
+      }
+      if (!this.task.remotepassword) {
+        this.error.host = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("remotepassword");
+        }
+        isValidationOk = false;
+      }
+      if (!this.task.remotehostname) {
+        this.error.host = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("remotehostname");
+        }
+        isValidationOk = false;
+      }
+      if (!this.task.remoteport) {
+        this.error.host = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("remoteport");
+        }
+        isValidationOk = false;
+      }
+      return isValidationOk;
+    },
+    createTaskValidationFailed(validationErrors) {
+      this.loading.createTask = false;
+      let focusAlreadySet = false;
+      for (const validationError of validationErrors) {
+        const param = validationError.parameter;
+        // set i18n error message
+        this.error[param] = this.$t("tasks." + validationError.error);
+        if (!focusAlreadySet) {
+          this.focusElement(param);
+          focusAlreadySet = true;
+        }
+      }
+    },
     async createTask() {
+      const isValidationOk = this.validateConfigureModule();
+      if (!isValidationOk) {
+        return;
+      }
       this.loading.createTask = true;
-      this.error.createTask = "";
+      this.error.createTask = false;
       const taskAction = "create-task";
       const eventId = this.getUuid();
       // register to task error
       this.core.$root.$once(
         `${taskAction}-aborted-${eventId}`,
         this.setCreateTaskAborted
+      );
+      // register to task validation
+      this.core.$root.$once(
+        `${taskAction}-validation-failed-${eventId}`,
+        this.createTaskValidationFailed
       );
       // register to task completion
       this.core.$root.$once(
@@ -220,14 +275,15 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
+            task_id: this.task.task_id,
             localuser: this.task.localuser,
             remotehostname: this.task.remotehostname,
             remotepassword: this.task.remotepassword,
             remoteport: Number(this.task.remoteport),
             remoteusername: this.task.remoteusername,
             security: this.task.security,
-            delete_local: this.task.delete_local,
-            delete_remote: this.task.delete_remote,
+            delete_local: this.task.delete === "delete_local" ? true : false,
+            delete_remote: this.task.delete === "delete_remote" ? true : false,
             exclude: this.task.exclude
               .split("\n")
               .map((item) => item.trim())
@@ -242,26 +298,31 @@ export default {
         })
       );
       const err = res[0];
-      // this.previousValues.Port = this.task.remoteport;
-      // this.previousValues.Security = this.task.security;
-      // this.previousValues.hostname = this.task.remotehostname;
       if (err) {
         console.error(`error creating task ${taskAction}`, err);
-        this.error.setCreateTask = this.getErrorMessage(err);
-        this.loading.setCreateTask = false;
+        this.error.createTask = this.getErrorMessage(err);
+        this.loading.createTask = false;
         return;
       }
     },
     setCreateTaskAborted(taskResult, taskContext) {
       console.error(`${taskContext.action} aborted`, taskResult);
-      this.error.setCreateTask = this.$t("error.generic_error");
-      this.loading.setCreateTask = false;
+      this.error.createTask = this.$t("error.generic_error");
+      this.loading.createTask = false;
     },
     setCreateTaskCompleted() {
-      this.loading.setCreateTask = false;
+      this.loading.createTask = false;
+      this.error.createTask = "";
       this.task.localuser == "";
+       this.clearErrors();
       this.$emit("hide");
       this.$emit("reloadtasks");
+    },
+    onModalHidden() {
+      this.loading.createTask = false;
+      this.error.createTask = "";
+       this.clearErrors();
+      this.$emit("hide");
     },
   },
 };
@@ -269,4 +330,10 @@ export default {
 
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
+.mg-bottom {
+  margin-bottom: 1rem !important;
+}
+.mg-left {
+  margin-left: 1rem !important;
+}
 </style>

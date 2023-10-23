@@ -120,7 +120,7 @@
               </template>
               <template slot="data">
                 <cv-data-table-row
-                  v-for="(row, rowIndex) in tasks"
+                  v-for="(row, rowIndex) in tablePage"
                   :key="`${rowIndex}`"
                   :value="`${rowIndex}`"
                 >
@@ -254,23 +254,18 @@ export default {
       check_tasks: false,
       isShownConfirmDeleteTask: false,
       isShownCreateOrEditTask: false,
-      previousValues: {
-        Port: "",
-        Security: "",
-        hostname: "",
-      },
       currentTask: {
+        task_id: "",
         localuser: "",
         remoteusername: "",
         remotehostname: "",
         remotepassword: "",
         service: false,
-        remoteport: "",
+        remoteport: "143",
         security: "",
-        delete_local: false,
-        delete_remote: false,
+        delete: "no_delete",
         exclude: "",
-        cron: ""
+        cron: "",
       },
       loading: {
         listTasks: false,
@@ -357,6 +352,7 @@ export default {
 
       Config.user_properties.forEach((task) => {
         this.tasks.push({
+          task_id: task.task_id,
           localuser: task.localuser,
           service: task.service_running,
           remotehostname: task.remotehostname,
@@ -364,8 +360,11 @@ export default {
           remoteport: task.remoteport,
           remoteusername: task.remoteusername,
           security: task.security,
-          delete_local: task.delete_local,
-          delete_remote: task.delete_remote,
+          delete: task.delete_local
+            ? "delete_local"
+            : task.delete_remote
+            ? "delete_remote"
+            : "no_delete",
           cron: task.cron,
           exclude: task.exclude
             .split(",")
@@ -373,40 +372,40 @@ export default {
             .join("\n"), //filter empty values
         });
       });
-
       this.check_tasks = this.tasks.length ? true : false;
       this.loading.listTasks = false;
     },
     toggleEditTask(task) {
       this.currentTask = task;
       this.isEdit = true;
-      if (this.previousValues.Port) {
-        this.currentTask.remoteport = this.previousValues.Port;
-        this.currentTask.security = this.previousValues.Security;
-        this.currentTask.remotehostname = this.previousValues.hostname;
-      }
       this.showCreateOrEditTask();
+    },
+    generateRandomId(length) {
+      let randomId = "";
+
+      const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        randomId += characters.charAt(randomIndex);
+      }
+
+      return randomId;
     },
     toggleCreateTask() {
       this.isEdit = false;
-
+      this.currentTask.task_id = this.generateRandomId(12);
       this.currentTask.localuser = "";
       this.currentTask.remoteusername = "";
       this.currentTask.remotehostname = "";
       this.currentTask.remotepassword = "";
       this.currentTask.service = false;
-      this.currentTask.remoteport = "";
-      this.currentTask.security = "";
-      this.currentTask.delete_local = false;
-      this.currentTask.delete_remote = false;
+      this.currentTask.remoteport = "143";
+      this.currentTask.security = "tls";
+      this.currentTask.delete = "no_delete";
       this.currentTask.exclude = "";
       this.currentTask.cron = "";
       this.currentTask.enabled_mailboxes = this.enabled_mailboxes;
-      if (this.previousValues.Port) {
-        this.currentTask.remoteport = this.previousValues.Port;
-        this.currentTask.security = this.previousValues.Security;
-        this.currentTask.remotehostname = this.previousValues.hostname;
-      }
       this.showCreateOrEditTask();
     },
     showCreateOrEditTask() {
@@ -444,6 +443,7 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
+            task_id: this.currentTask.task_id,
             localuser: this.currentTask.localuser,
           },
           extra: {
@@ -492,6 +492,7 @@ export default {
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
+            task_id: task.task_id,
             localuser: task.localuser,
           },
           extra: {

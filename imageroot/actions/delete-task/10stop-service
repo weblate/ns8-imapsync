@@ -11,6 +11,6 @@ import json
 import agent
 
 data = json.load(sys.stdin)
-
 localuser = data["localuser"]
-agent.run_helper("run-imapsync", "stop", localuser).check_returncode()
+task_id = data["task_id"]
+agent.run_helper("run-imapsync", "stop", localuser+'_'+task_id).check_returncode()
