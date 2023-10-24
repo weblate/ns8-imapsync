@@ -80,7 +80,7 @@
             "type": "string",
             "title": "Remote User",
             "description": "Remote user of the remote account",
-            "oneOf": [
+            "anyOf": [
                 {
                     "minLength": 1
                 },
