@@ -63,13 +63,18 @@ if cron != "":
         cron_env = "*/"+cron.replace('m','')+" * * * * root /usr/local/bin/syncctl start "+localuser+'_'+task_id
     f = open("./cron/"+localuser+'_'+task_id+".cron", "w", encoding="utf-8")
     # MAIL_HOSTNAME is an env variable used by perl/imapsync 
-    f.write('MAIL_HOSTNAME="${MAIL_HOSTNAME}"'+"\n")
+    f.write('MAIL_HOSTNAME='+os.environ['MAIL_HOSTNAME']+"\n")
     f.write(cron_env+"\n")
     f.close()
 # cron does not exist we remove or ignore
 elif cron == "" and os.path.exists("./cron/"+localuser+'_'+task_id+".cron"):
     os.remove("./cron/"+localuser+'_'+task_id+".cron")
 
+foldersynchronization = data.get("foldersynchronization","all")
+if foldersynchronization == "inbox":
+    folder_inbox = "--folder\ 'INBOX'"
+else:
+    folder_inbox = ""
 
 user_env = f"""
 TASK_ID={task_id}
@@ -84,6 +89,8 @@ EXCLUDE={exclude}
 DELETE_REMOTE={delete_remote}
 EXPUNGE_REMOTE={expunge_remote}
 CRON={cron}
+FOLDER_INBOX={folder_inbox}
+FOLDERSYNCHRONIZATION={foldersynchronization}
 """
 os.umask(0o77)
 

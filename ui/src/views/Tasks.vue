@@ -39,18 +39,10 @@
               <NsButton
                 kind="primary"
                 class="page-toolbar-item"
-                :icon="enabled_mailboxes.length ? Add20 : ''"
+                :icon="Add20"
                 @click="toggleCreateTask"
-                :disabled="
-                  loading.listTasks ||
-                  loading.setDeleteTask ||
-                  !enabled_mailboxes.length
-                "
-                >{{
-                  enabled_mailboxes.length
-                    ? $t("tasks.create_task")
-                    : $t("tasks.no_more_task")
-                }}
+                :disabled="loading.listTasks || loading.setDeleteTask"
+                >{{ $t("tasks.create_task") }}
               </NsButton>
               <NsButton
                 kind="secondary"
@@ -266,6 +258,7 @@ export default {
         delete: "no_delete",
         exclude: "",
         cron: "",
+        foldersynchronization: "all",
       },
       loading: {
         listTasks: false,
@@ -366,6 +359,7 @@ export default {
             ? "delete_remote"
             : "no_delete",
           cron: task.cron,
+          foldersynchronization: task.foldersynchronization,
           exclude: task.exclude
             .split(",")
             .filter((value) => value.trim() !== "")
@@ -394,7 +388,7 @@ export default {
     },
     toggleCreateTask() {
       this.isEdit = false;
-      this.currentTask.task_id = this.generateRandomId(12);
+      this.currentTask.task_id = this.generateRandomId(6);
       this.currentTask.localuser = "";
       this.currentTask.remoteusername = "";
       this.currentTask.remotehostname = "";
@@ -405,7 +399,7 @@ export default {
       this.currentTask.delete = "no_delete";
       this.currentTask.exclude = "";
       this.currentTask.cron = "";
-      this.currentTask.enabled_mailboxes = this.enabled_mailboxes;
+      this.currentTask.foldersynchronization = "all";
       this.showCreateOrEditTask();
     },
     showCreateOrEditTask() {

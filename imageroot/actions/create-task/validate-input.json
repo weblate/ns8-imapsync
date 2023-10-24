@@ -15,7 +15,8 @@
             "exclude": "folder1,folder2",
             "delete_remote": false,
             "cron": "5m",
-            "task_id":""
+            "task_id": "",
+            "foldersynchronization": "all"
         }
     ],
     "type": "object",
@@ -30,10 +31,21 @@
         "delete_local",
         "exclude",
         "delete_remote",
-        "cron"
+        "cron",
+        "foldersynchronization"
     ],
     "additionalProperties": false,
     "properties": {
+        "foldersynchronization": {
+            "type": "string",
+            "title": "folder synchronization",
+            "description": "Decide what folders to synchronize",
+            "enum": [
+                "all",
+                "inbox",
+                "exclusion"
+            ]
+        },
         "cron": {
             "type": "string",
             "title": "Cron task",

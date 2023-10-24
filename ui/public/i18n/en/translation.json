@@ -82,7 +82,7 @@
     "hour":"hour",
     "minutes":"minutes",
     "no_cron": "No sheduled task",
-    "select_your_cron": "Shedule your tasks",
+    "select_your_cron": "Shedule your task",
     "set_when_you_want_the_task_start": "Select when to start your task",
     "remove_mails":"Email removal",
     "imapsync_removal_explanation":"Imapsync can remove emails on remote once synchronized on the local server or remove all emails on local that are not on the remote server",
@@ -91,7 +91,13 @@
     "bad_user_credentials": "Verify the user credentials, the remote server refused to authenticate",
     "Check_hostname_or_tcp_port": "Verify the Hostname and the TCP port, the remote server refused to authenticate",
     "SSL_encryption_error":"Verify the TLS encryption, IMAPS of STARTTLS",
-    "localuser_string_gte": "The local username cannot be empty"
+    "localuser_string_gte": "The local username cannot be empty",
+    "synchronize_folders": "Folder synchronization",
+    "synchronize_folders_explanation": "You can decide to make a full synchronization, only INBOX, or folders exclusion",
+    "synchronize_only_INBOX": "Synchronize only INBOX",
+    "syncronize_all": "Synchronize all recursively",
+    "syncronize_all_with_exclusion": "Synchronize all with exclusions",
+    "start_by^_and_end_by$": "For exact match you should start by ^ and end by $"
 
   },
   "about": {

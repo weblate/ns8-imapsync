@@ -42,6 +42,8 @@ exclude: folder1,folder2,^folder3$
 - start tasks by a cron (use 5m for minute, 2h for hour: start a cron `0/5 * * * *` or `1 */2 * * *`)
 cron: 5m
 - the remote imap account credentials (you can use the password of the imap master administrator if you know it, for example vmail. use the login user*vmail and the relevant password). Otherwise use the login and the password of the remote account.
+- foldersynchronization: synchronize `all`, only what is in `inbox` or `all but with exclusion` ("all","inbox","exclusion")
+- task_id : must be unical, set by a random function by the UI
 
 Example:
 
@@ -55,7 +57,9 @@ Example:
         "exclude":"folder1,folder2",
         "remoteusername":"username",
         "remotepassword":"password",
-        "cron":"5m"
+        "cron":"5m",
+        "task_id" "a0241w",
+        "foldersynchronization": "all"
     }'
 
 ## delete env and stop a running synchronisation
@@ -161,6 +165,35 @@ api-cli run module/imapsync1/list-tasks
     }
   ]
 }
+```
+
+## troubleshot issues
+
+in the state folder of the imapsync module you can find environment file (`*.env`), password file (`*.pwd`) and lock file when a task is running (`*.lock`)
+You can filter by the task name (locauser to sync + task_id)
+
+The vmail.pwd file is the credential of the dovecote master user
+
+```
+.config/state/
+├── cron
+│   ├── foo_a0241w.cron
+│   └── foo_a1j44r.cron
+└── imapsync
+    ├── foo_a0241w.env
+    ├── foo_a0241w.lock
+    ├── foo_a0241w.pwd
+    ├── foo_a1j44r.env
+    ├── foo_a1j44r.pwd
+    └── vmail.pwd
+```
+
+to launch manually a task
+```
+ssh imapsync1@localhost
+podman exec -ti imapsync /usr/local/bin/syncctl start foo_a1j44r
+podman exec -ti imapsync /usr/local/bin/syncctl stop foo_a1j44r
+podman exec -ti imapsync /usr/local/bin/syncctl status foo_a1j44r
 ```
 
 ## Uninstall

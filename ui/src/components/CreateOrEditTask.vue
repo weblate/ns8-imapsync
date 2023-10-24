@@ -11,21 +11,24 @@
     :primary-button-disabled="loading.createTask"
   >
     <template slot="title"
-      >{{ !isEdit ? $t("tasks.create_task") + " " : $t("tasks.edit_task") + " "
-      }}{{ task.localuser }}</template
+      >{{
+        !isEdit
+          ? $t("tasks.create_task") + " "
+          : $t("tasks.edit_task") + " " + task.localuser + "_" + task.task_id
+      }}</template
     >
     <template slot="content">
       <cv-form>
         <NsComboBox
-          v-show="!isEdit"
+          v-if="!isEdit"
+          :options="enabled_mailboxes"
           v-model.trim="task.localuser"
           :autoFilter="true"
           :autoHighlight="true"
           :title="$t('tasks.local_user')"
           :label="$t('tasks.choose_local_user')"
-          :options="enabled_mailboxes"
           :userInputLabel="$t('tasks.choose_local_user')"
-          :acceptUserInput="false"
+          :acceptUserInput="true"
           :showItemType="true"
           :invalid-message="$t(error.enabled_mailboxes)"
           tooltipAlignment="start"
@@ -50,6 +53,7 @@
         <NsTextInput
           v-model.trim="task.remotehostname"
           :label="$t('tasks.remotehostname')"
+          placeholder="imap.domain.com"
           ref="remotehostname"
         />
         <NsTextInput
@@ -78,13 +82,79 @@
             $t("tasks.use_imaps_default_993/tcp")
           }}</cv-dropdown-item>
         </cv-dropdown>
-        <cv-text-area
-          :label="$t('tasks.exclude_folder')"
-          v-model.trim="task.exclude"
-          ref="exclude"
-          :placeholder="$t('tasks.write_one_exclusion_per_line')"
-        >
-        </cv-text-area>
+        <span class="mg-bottom">
+          {{ $t("tasks.synchronize_folders") }}
+          <cv-tooltip
+            alignment="start"
+            direction="bottom"
+            :tip="$t('tasks.synchronize_folders_explanation')"
+            class="info mg-bottom"
+          >
+          </cv-tooltip>
+        </span>
+        <cv-radio-group vertical class="mg-bottom mg-left">
+          <cv-radio-button
+            :name="'radio-group-foldersynchronization'"
+            :label="$t('tasks.synchronize_only_INBOX')"
+            value="inbox"
+            v-model="task.foldersynchronization"
+          />
+          <cv-radio-button
+            :name="'radio-group-foldersynchronization'"
+            :label="$t('tasks.syncronize_all')"
+            value="all"
+            v-model="task.foldersynchronization"
+          />
+          <cv-radio-button
+            :name="'radio-group-foldersynchronization'"
+            :label="$t('tasks.syncronize_all_with_exclusion')"
+            value="exclusion"
+            v-model="task.foldersynchronization"
+          />
+        </cv-radio-group>
+        <template v-if="task.foldersynchronization == 'exclusion'">
+          <cv-text-area
+            class="mg-left"
+            :label="$t('tasks.exclude_folder')"
+            v-model.trim="task.exclude"
+            ref="exclude"
+            :placeholder="$t('tasks.write_one_exclusion_per_line')"
+            :helper-text="$t('tasks.start_by^_and_end_by$')"
+          >
+          </cv-text-area>
+        </template>
+
+        <span class="mg-bottom">
+          {{ $t("tasks.remove_mails") }}
+          <cv-tooltip
+            alignment="start"
+            direction="bottom"
+            :tip="$t('tasks.imapsync_removal_explanation')"
+            class="info mg-bottom"
+          >
+          </cv-tooltip>
+        </span>
+        <cv-radio-group vertical class="mg-bottom mg-left">
+          <cv-radio-button
+            :name="'radio-group-delete_local'"
+            :label="$t('tasks.no_deletion')"
+            value="no_delete"
+            v-model="task.delete"
+          />
+
+          <cv-radio-button
+            :name="'radio-group-delete_local'"
+            :label="$t('tasks.delete_on_remote')"
+            value="delete_remote"
+            v-model="task.delete"
+          />
+          <cv-radio-button
+            :name="'radio-group-delete_remote'"
+            :label="$t('tasks.delete_on_local')"
+            value="delete_local"
+            v-model="task.delete"
+          />
+        </cv-radio-group>
         <cv-dropdown
           :light="true"
           :value="task.cron"
@@ -114,48 +184,17 @@
             >1 {{ $t("tasks.hour") }}</cv-dropdown-item
           >
         </cv-dropdown>
-        <span class="mg-bottom">
-          {{ $t("tasks.remove_mails") }}
-          <cv-tooltip
-            alignment="start"
-            direction="bottom"
-            :tip="$t('tasks.imapsync_removal_explanation')"
-            class="info mg-bottom"
-          >
-          </cv-tooltip>
-        </span>
-        <cv-radio-group vertical class="no-mg-bottom mg-left">
-          <cv-radio-button
-            :name="'radio-group-delete_local'"
-            :label="$t('tasks.no_deletion')"
-            value="no_delete"
-            v-model="task.delete"
-          />
-
-          <cv-radio-button
-            :name="'radio-group-delete_local'"
-            :label="$t('tasks.delete_on_remote')"
-            value="delete_remote"
-            v-model="task.delete"
-          />
-          <cv-radio-button
-            :name="'radio-group-delete_remote'"
-            :label="$t('tasks.delete_on_local')"
-            value="delete_local"
-            v-model="task.delete"
-          />
-        </cv-radio-group>
       </cv-form>
-              <cv-row v-if="error.createTask">
-      <cv-column>
-        <NsInlineNotification
-          kind="error"
-          :title="$t('tasks.create_task')"
-          :description="error.createTask"
-          :showCloseButton="false"
-        />
-      </cv-column>
-          </cv-row>
+      <cv-row v-if="error.createTask">
+        <cv-column>
+          <NsInlineNotification
+            kind="error"
+            :title="$t('tasks.create_task')"
+            :description="error.createTask"
+            :showCloseButton="false"
+          />
+        </cv-column>
+      </cv-row>
     </template>
     <template slot="secondary-button">{{ $t("common.cancel") }}</template>
     <template slot="primary-button">{{ $t("common.save") }}</template>
@@ -180,11 +219,8 @@ export default {
   data() {
     return {
       isValidated: false,
-      previousValues: { Port: "", Security: "", hostname: "" },
-      localuser: "",
       loading: {
         createTask: false,
-        setCreateTask: false,
       },
       error: {
         enabled_mailboxe: "",
@@ -289,6 +325,7 @@ export default {
               .map((item) => item.trim())
               .join(","),
             cron: this.task.cron,
+            foldersynchronization: this.task.foldersynchronization,
           },
           extra: {
             title: this.$t("action." + taskAction),
@@ -312,22 +349,17 @@ export default {
     },
     setCreateTaskCompleted() {
       this.loading.createTask = false;
-      this.error.createTask = "";
-      this.task.localuser == "";
-       this.clearErrors();
+      this.clearErrors();
       this.$emit("hide");
       this.$emit("reloadtasks");
     },
     onModalHidden() {
-      this.loading.createTask = false;
-      this.error.createTask = "";
-       this.clearErrors();
+      this.clearErrors();
       this.$emit("hide");
     },
   },
 };
 </script>
-
 <style scoped lang="scss">
 @import "../styles/carbon-utils";
 .mg-bottom {
