@@ -4,5 +4,40 @@
     "$id": "http://schema.nethserver.org/imapsync/get-configuration-output.json",
     "description": "Get imapsync configuration",
     "examples": [],
-    "type": "object"
+    "type": "object",
+    "properties": {
+        "mail_server": {
+            "type": "string"
+        },
+        "mail_hostname": {
+            "type": "string"
+        },
+        "mail_server_URL": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "label",
+                    "value"
+                ]
+            }
+        }
+    },
+    "required": [
+        "mail_server",
+        "mail_hostname",
+        "mail_server_URL"
+    ]
 }
