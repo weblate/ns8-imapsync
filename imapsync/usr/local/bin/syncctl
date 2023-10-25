@@ -41,7 +41,7 @@ if [[ "$action" == "start" ]]; then
         --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  \
         --host2 "${MAIL_HOSTNAME}"  --user2 "${LOCALUSER}*vmail" \
         --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
-        ${FOLDER_INBOX} --exclude "^Public$|^Shared$"${exclude_regex}"" > /proc/$(cat /var/run/crond.pid)/fd/1 2>&1
+        ${FOLDER_INBOX} --exclude "^Public$|^Shared$"${exclude_regex}"" > /proc/1/fd/1 2>&1
 
 elif [[ "$action" == "stop" ]];then
     if [[ -f "/etc/imapsync/${task_id}.pid" ]]; then
