@@ -11,7 +11,7 @@
     @primary-click="$emit('confirm')"
   >
     <template slot="title"
-      >{{ $t("tasks.delete_task") }}: {{ task.localuser }}</template
+      >{{ $t("tasks.delete_task") }}: {{ task.localuser + "_" + task.task_id}}</template
     >
     <template slot="content">
       <div>{{ $t("tasks.confirm_delete_task_message") }}</div>

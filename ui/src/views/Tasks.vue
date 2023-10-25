@@ -35,7 +35,7 @@
       <cv-row class="toolbar">
         <cv-column>
           <div>
-            <template>
+            <template v-if="enabled_mailboxes.length" >
               <NsButton
                 kind="primary"
                 class="page-toolbar-item"
