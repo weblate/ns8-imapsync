@@ -130,6 +130,23 @@ api-cli run module/imapsync1/list-tasks
 
 ```json
 {
+    "enabled_mailboxes": [
+    {
+      "name": "administrator",
+      "label": "administrator",
+      "value": "administrator"
+    },
+    {
+      "name": "foo",
+      "label": "foo",
+      "value": "foo"
+    },
+    {
+      "name": "john",
+      "label": "john",
+      "value": "john"
+    }
+  ],
   "user_properties": [
     {
       "props": {
@@ -150,15 +167,15 @@ api-cli run module/imapsync1/list-tasks
     {
       "props": {
         "localuser": "foo",
-        "remoteusername": "",
-        "remotehostname": "",
-        "remoteport": "",
-        "security": "",
+        "remoteusername": "username",
+        "remotehostname": "imap.foo.com",
+        "remoteport": "143",
+        "security": "tls",
         "delete_local": false,
         "delete_local": true,
         "exclude": "",
-        "remotepassword": "",
-        "cron": "2h"
+        "remotepassword": "password",
+        "cron": "1h"
       },
       "mailbox": "foo",
       "service_running": false
