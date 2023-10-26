@@ -11,7 +11,7 @@
     @primary-click="$emit('confirm')"
   >
     <template slot="title"
-      >{{ $t("tasks.delete_task") }}: {{ task.localuser + "_" + task.task_id}}</template
+      >{{ $t("tasks.delete_task") }}: {{ task.localuser }}</template
     >
     <template slot="content">
       <div>{{ $t("tasks.confirm_delete_task_message") }}</div>
@@ -24,7 +24,7 @@
 <script>
 import { UtilService, IconService } from "@nethserver/ns8-ui-lib";
 export default {
-  name: "ConfirmRelaseIP",
+  name: "ConfirmDeleteTask",
   mixins: [UtilService, IconService],
   props: {
     isShown: Boolean,

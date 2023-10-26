@@ -97,7 +97,16 @@
     "synchronize_only_INBOX": "Synchronize only INBOX",
     "syncronize_all": "Synchronize all recursively",
     "syncronize_all_with_exclusion": "Synchronize all with exclusions",
-    "start_by^_and_end_by$": "For exact match you should start by ^ and end by $"
+    "start_by^_and_end_by$": "For exact match you should start by ^ and end by $",
+    "local_account_host2Folders": "Folders on local account",
+    "remote_account_host1Folders": "Folders on remote account",
+    "local_account_host2Messages": "Messages on local account",
+    "remote_account_host1Messages": "Messages on remote account",
+    "local_account_host2Sizes": "Email size on local account",
+    "remote_account_host1Sizes": "Email size on remote account",
+    "compare_accounts": "Compare local and remote account",
+    "something_wrong_cannot_list_informations": "Something went wront we cannot list the remote and account informations",
+    "informations": "Informations"
 
   },
   "about": {
@@ -121,7 +130,8 @@
     "stop-all-tasks": "Stop all tasks",
     "create-task": "Create task",
     "start-task": "Start task",
-    "stop-task": "Stop task"
+    "stop-task": "Stop task",
+    "list-informations": "List informations"
   },
   "error": {
     "error": "Error",

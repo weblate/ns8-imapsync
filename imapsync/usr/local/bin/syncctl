@@ -6,9 +6,9 @@
 #
 
 # control imapsync : syncctl {start,status,stop} task_id
-# start : start the sync for the task_id 
-# status : display the state (Running, Stopped) of the sync for the task_id 
-# stop : stop the sync for the task_id 
+# start : start the sync for the task_id
+# status : display the state (Running, Stopped) of the sync for the task_id
+# stop : stop the sync for the task_id
 # validation: validate the settings by trying to just login to imapsync and quit
 
 # shellcheck shell=dash
@@ -31,14 +31,16 @@ if [[ "$action" == "start" ]]; then
         # source breaks with `|`
         exclude_regex=$(echo "$EXCLUDE" | tr ',' '|')
     fi
-
+    if [[ "${REMOTEHOSTNAME}" == 'imap.gmail.com' ]]; then
+        gmail='--gmail1'
+    fi
     flock -x -n "/etc/imapsync/${task_id}.lock" \
         /usr/bin/imapsync --pidfile "/etc/imapsync/${task_id}.pid" --nolog \
         --noauthmd5 --noreleasecheck --allowsizemismatch \
         --skipsize --nofoldersizes "${DELETE_LOCAL}" "${DELETEFOLDERS}" "${DELETE_REMOTE}" "${EXPUNGE_REMOTE}" \
         --fastio1 --fastio2 --buffersize 8192000 \
         --host1 "${REMOTEHOSTNAME}"  --user1 "${REMOTEUSERNAME}"  \
-        --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  \
+        --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  "$gmail" \
         --host2 "${MAIL_HOSTNAME}"  --user2 "${LOCALUSER}*vmail" \
         --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
         ${FOLDER_INBOX} --exclude "^Public$|^Shared$"${exclude_regex}"" > /proc/1/fd/1 2>&1
@@ -65,4 +67,22 @@ elif [[ "$action" == "validation" ]];then
         --host2 "${MAIL_HOSTNAME}" --user2 "${LOCALUSER}*vmail" \
         --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
         --justlogin --timeout 10
+
+elif [[ "$action" == "list-informations" ]]; then
+
+    if [[ $FOLDERSYNCHRONIZATION == "exclusion" ]];then
+        # source breaks with `|`
+        exclude_regex=$(echo "$EXCLUDE" | tr ',' '|')
+    fi
+    if [[ "${REMOTEHOSTNAME}" == 'imap.gmail.com' ]]; then
+        gmail='--gmail1'
+    fi
+    /usr/bin/imapsync --nolog \
+    "${DELETE_LOCAL}" "${DELETEFOLDERS}" "${DELETE_REMOTE}" "${EXPUNGE_REMOTE}" \
+    --fastio1 --fastio2 --buffersize 8192000 \
+    --host1 "${REMOTEHOSTNAME}"  --user1 "${REMOTEUSERNAME}"  \
+    --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  "$gmail" \
+    --host2 "${MAIL_HOSTNAME}"  --user2 "${LOCALUSER}*vmail" \
+    --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
+    ${FOLDER_INBOX} --exclude "^Public$|^Shared$"${exclude_regex}"" --justfoldersizes --timeout1 10
 fi

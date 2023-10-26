@@ -35,7 +35,7 @@
       <cv-row class="toolbar">
         <cv-column>
           <div>
-            <template v-if="enabled_mailboxes.length" >
+            <template v-if="enabled_mailboxes.length">
               <NsButton
                 kind="primary"
                 class="page-toolbar-item"
@@ -166,6 +166,16 @@
                           :label="$t('tasks.delete')"
                         />
                       </cv-overflow-menu-item>
+                      <cv-overflow-menu-item
+                        v-if="row.remoteusername !== ''"
+                        @click="toggleInformations(row)"
+                        :data-test-id="row.localuser + '-list-informations'"
+                      >
+                        <NsMenuItem
+                          :icon="Information20"
+                          :label="$t('tasks.informations')"
+                        />
+                      </cv-overflow-menu-item>
                     </cv-overflow-menu>
                   </cv-data-table-cell>
                 </cv-data-table-row>
@@ -175,6 +185,11 @@
         </cv-column>
       </cv-row>
     </cv-grid>
+    <ShowListInformations
+      :isShown="isShowListInformations"
+      :task="currentTask"
+      @hide="hideShowListInformations"
+    />
     <ConfirmDeleteTask
       :isShown="isShownConfirmDeleteTask"
       :task="currentTask"
@@ -205,14 +220,18 @@ import {
 import to from "await-to-js";
 import ConfirmDeleteTask from "@/components/ConfirmDeleteTask";
 import CreateOrEditTask from "@/components/CreateOrEditTask";
+import ShowListInformations from "@/components/ShowListInformations";
 import Play20 from "@carbon/icons-vue/es/play--outline/20";
 import Stop20 from "@carbon/icons-vue/es/stop--outline/20";
 import Add20 from "@carbon/icons-vue/es/task--add/20";
+import Information20 from "@carbon/icons-vue/es/information/20";
+
 export default {
   name: "Tasks",
   components: {
     ConfirmDeleteTask,
     CreateOrEditTask,
+    ShowListInformations,
   },
   mixins: [
     QueryParamService,
@@ -229,6 +248,7 @@ export default {
       q: {
         page: "tasks",
       },
+      Information20,
       Play20,
       Stop20,
       Add20,
@@ -246,6 +266,7 @@ export default {
       check_tasks: false,
       isShownConfirmDeleteTask: false,
       isShownCreateOrEditTask: false,
+      isShowListInformations: false,
       currentTask: {
         task_id: "",
         localuser: "",
@@ -263,12 +284,15 @@ export default {
       loading: {
         listTasks: false,
         setDeleteTask: false,
+        toggleListInformations: false
       },
       error: {
         listTasks: "",
         setDeleteTask: "",
         startAllTasks: "",
         stopAllTasks: "",
+        toggleActionTask: "",
+        toggleListInformations:""
       },
     };
   },
@@ -411,6 +435,13 @@ export default {
     toggleDeleteTask(task) {
       this.currentTask = task;
       this.showConfirmDeleteTask();
+    },
+    toggleInformations(task){
+       this.currentTask = task;
+      this.isShowListInformations = true;
+    },
+        hideShowListInformations() {
+      this.isShowListInformations = false;
     },
     showConfirmDeleteTask() {
       this.isShownConfirmDeleteTask = true;
