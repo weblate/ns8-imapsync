@@ -10,13 +10,16 @@
     @primary-click="createTask"
     :primary-button-disabled="loading.createTask"
   >
-    <template slot="title"
-      >{{
-        !isEdit
-          ? $t("tasks.create_task") + " "
-          : $t("tasks.edit_task") + " " + task.localuser + "_" + task.task_id
-      }}</template
-    >
+    <template slot="title">{{
+      !isEdit
+        ? $t("tasks.create_task") + " "
+        : $t("tasks.edit_task") +
+          " " +
+          task.localuser +
+          " (" +
+          task.task_id +
+          ")"
+    }}</template>
     <template slot="content">
       <cv-form>
         <NsComboBox

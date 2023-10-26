@@ -118,7 +118,7 @@
                 >
                   <cv-data-table-row>
                     <div class="mg-top mg-left gray">
-                      {{ row.localuser }}
+                      {{ row.localuser }} ({{row.task_id}})
                     </div>
                   </cv-data-table-row>
                   <cv-data-table-cell>
