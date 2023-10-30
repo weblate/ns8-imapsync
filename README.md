@@ -58,7 +58,7 @@ Example:
         "remoteusername":"username",
         "remotepassword":"password",
         "cron":"5m",
-        "task_id" "a0241w",
+        "task_id": "a0241w",
         "foldersynchronization": "all"
     }'
 
@@ -130,7 +130,7 @@ api-cli run module/imapsync1/list-tasks
 
 ```json
 {
-    "enabled_mailboxes": [
+  "enabled_mailboxes": [
     {
       "name": "administrator",
       "label": "administrator",
@@ -149,40 +149,68 @@ api-cli run module/imapsync1/list-tasks
   ],
   "user_properties": [
     {
-      "props": {
-        "localuser": "administrator",
-        "remoteusername": "username",
-        "remotehostname": "imap.foo.com",
-        "remoteport": "143",
-        "security": "tls",
-        "delete_local": true,
-        "delete_remote": false,
-        "exclude": "|folder1|folder2",
-        "remotepassword": "password",
-        "cron": "5m"
-      },
-      "mailbox": "administrator",
+      "task_id": "qu1dcb",
+      "localuser": "administrator",
+      "remoteusername": "user2@domain.com",
+      "remotehostname": "imap.domain.com",
+      "remoteport": "143",
+      "security": "tls",
+      "delete_local": false,
+      "deletefolder": "",
+      "exclude": "",
+      "delete_remote": false,
+      "expunge_remote": "",
+      "cron": "",
+      "folder_inbox": "",
+      "foldersynchronization": "all",
+      "remotepassword": "password",
       "service_running": false
     },
     {
-      "props": {
-        "localuser": "foo",
-        "remoteusername": "username",
-        "remotehostname": "imap.foo.com",
-        "remoteport": "143",
-        "security": "tls",
-        "delete_local": false,
-        "delete_local": true,
-        "exclude": "",
-        "remotepassword": "password",
-        "cron": "1h"
-      },
-      "mailbox": "foo",
+      "task_id": "vd2am3",
+      "localuser": "john",
+      "remoteusername": "user@domain.com",
+      "remotehostname": "imap.domain.com",
+      "remoteport": "143",
+      "security": "tls",
+      "delete_local": false,
+      "deletefolder": "",
+      "exclude": "",
+      "delete_remote": false,
+      "expunge_remote": "",
+      "cron": "",
+      "folder_inbox": "",
+      "foldersynchronization": "all",
+      "remotepassword": "password",
       "service_running": false
     }
   ]
 }
+
 ```
+
+## list-informations
+
+You can retrieve the email and folder numbers and the email size for the local and remote account
+Example:
+
+    api-cli run module/imapsync9/list-informations --data '{
+      "localuser": "john",
+      "task_id": "vd2am3"
+      }'
+
+output:
+
+```json
+{"status": true, "host1Folders": 78, "host2Folders": 78, "host1Messages": 164625, "host2Messages": 155, "host1Sizes": 3060488650, "host2Sizes": 72036894}
+```
+
+in case of error you will have
+
+```json
+{"status": false}
+```
+
 
 ## troubleshot issues
 
