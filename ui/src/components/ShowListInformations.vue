@@ -52,11 +52,11 @@
           }}</span>
         </div>
       </template>
-    </template>
-    <template
-      v-if="!loading.toggleListInformations && !currentInformation.status"
-    >
-      <div>{{ $t("tasks.something_wrong_cannot_list_informations") }}</div>
+      <template
+        v-if="!loading.toggleListInformations && !currentInformation.status"
+      >
+        <div>{{ $t("tasks.something_wrong_cannot_list_informations") }}</div>
+      </template>
     </template>
   </NsModal>
 </template>

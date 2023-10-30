@@ -39,12 +39,6 @@
         }
     },
     "required": [
-        "status",
-        "host1Folders",
-        "host2Folders",
-        "host1Messages",
-        "host2Messages",
-        "host2Sizes",
-        "host1Sizes"
+        "status"
     ]
 }

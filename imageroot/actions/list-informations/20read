@@ -18,9 +18,8 @@ imapsync_args = ["podman","exec","-ti","imapsync","syncctl","list-informations",
 try:
     process = subprocess.Popen(imapsync_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
     stdout, stderr = process.communicate()
-
     if process.returncode == 0:
-        ret = {'status': True}
+        ret = {'status': False}  # Set the default status to False 
         for line in stdout.split('\n'):
             if 'Host2 Nb folders' in line:
                 ret['host2Folders'] = int(re.search(r'(\d+) folders', line).group(1))
@@ -34,6 +33,9 @@ try:
                 ret['host1Messages'] = int(re.search(r'(\d+) messages', line).group(1))
             elif 'Host1 Total size' in line:
                 ret['host1Sizes'] = int(re.search(r'(\d+) bytes', line).group(1))
+        if all(key in ret for key in ('host2Folders', 'host2Messages', 'host2Sizes','host1Folders','host1Messages','host1Sizes')):
+            ret['status'] = True  # Set status to True if all data is present
+
     else:
         ret = {'status': False}
 except Exception as e:
