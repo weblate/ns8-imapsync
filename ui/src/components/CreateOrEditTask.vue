@@ -13,12 +13,7 @@
     <template slot="title">{{
       !isEdit
         ? $t("tasks.create_task") + " "
-        : $t("tasks.edit_task") +
-          " " +
-          task.localuser +
-          " (" +
-          task.task_id +
-          ")"
+        : $t("tasks.edit_task") + " " + task.localuser
     }}</template>
     <template slot="content">
       <cv-form>
@@ -176,16 +171,20 @@
             $t("tasks.no_cron")
           }}</cv-dropdown-item>
           <cv-dropdown-item value="5m"
-            >{{ $t("tasks.every") }} 5 {{ $t("tasks.minutes") }}</cv-dropdown-item
+            >{{ $t("tasks.every") }} 5
+            {{ $t("tasks.minutes") }}</cv-dropdown-item
           >
           <cv-dropdown-item value="15m"
-            >{{ $t("tasks.every") }} 15 {{ $t("tasks.minutes") }}</cv-dropdown-item
+            >{{ $t("tasks.every") }} 15
+            {{ $t("tasks.minutes") }}</cv-dropdown-item
           >
           <cv-dropdown-item value="30m"
-            >{{ $t("tasks.every") }} 30 {{ $t("tasks.minutes") }}</cv-dropdown-item
+            >{{ $t("tasks.every") }} 30
+            {{ $t("tasks.minutes") }}</cv-dropdown-item
           >
           <cv-dropdown-item value="45m"
-            >{{ $t("tasks.every") }} 45 {{ $t("tasks.minutes") }}</cv-dropdown-item
+            >{{ $t("tasks.every") }} 45
+            {{ $t("tasks.minutes") }}</cv-dropdown-item
           >
           <cv-dropdown-item value="1h"
             >{{ $t("tasks.every") }} 1 {{ $t("tasks.hour") }}</cv-dropdown-item

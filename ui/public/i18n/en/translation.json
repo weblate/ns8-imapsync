@@ -45,6 +45,7 @@
     "col_remoteusername": "Remote user",
     "col_remotehostname": "IMAP server",
     "col_task_status": "Task status",
+    "col_task_id": "Task ID",
     "create": "Create",
     "edit": "Edit",
     "start": "Start",

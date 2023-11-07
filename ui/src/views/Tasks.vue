@@ -118,7 +118,7 @@
                 >
                   <cv-data-table-row>
                     <div class="mg-top mg-left gray">
-                      {{ row.localuser }} ({{ row.task_id }})
+                      {{ row.localuser }}
                     </div>
                   </cv-data-table-row>
                   <cv-data-table-cell>
@@ -131,6 +131,9 @@
                     {{
                       row.service ? $t("tasks.running") : $t("tasks.stopped")
                     }}
+                  </cv-data-table-cell>
+                  <cv-data-table-cell>
+                    {{ row.task_id }}
                   </cv-data-table-cell>
                   <cv-data-table-cell class="table-overflow-menu-cell">
                     <cv-overflow-menu
@@ -259,6 +262,7 @@ export default {
         "remoteusername",
         "remotehostname",
         "task_status",
+        "task_id",
       ],
       tasks: [],
       enabled_mailboxes: [],
