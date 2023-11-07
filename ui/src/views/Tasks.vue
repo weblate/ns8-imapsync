@@ -118,7 +118,7 @@
                 >
                   <cv-data-table-row>
                     <div class="mg-top mg-left gray">
-                      {{ row.localuser }} ({{row.task_id}})
+                      {{ row.localuser }} ({{ row.task_id }})
                     </div>
                   </cv-data-table-row>
                   <cv-data-table-cell>
@@ -284,7 +284,7 @@ export default {
       loading: {
         listTasks: false,
         setDeleteTask: false,
-        toggleListInformations: false
+        toggleListInformations: false,
       },
       error: {
         listTasks: "",
@@ -292,7 +292,7 @@ export default {
         startAllTasks: "",
         stopAllTasks: "",
         toggleActionTask: "",
-        toggleListInformations:""
+        toggleListInformations: "",
       },
     };
   },
@@ -436,11 +436,11 @@ export default {
       this.currentTask = task;
       this.showConfirmDeleteTask();
     },
-    toggleInformations(task){
-       this.currentTask = task;
+    toggleInformations(task) {
+      this.currentTask = task;
       this.isShowListInformations = true;
     },
-        hideShowListInformations() {
+    hideShowListInformations() {
       this.isShowListInformations = false;
     },
     showConfirmDeleteTask() {

@@ -33,7 +33,7 @@
           :userInputLabel="$t('tasks.choose_local_user')"
           :acceptUserInput="true"
           :showItemType="true"
-          :invalid-message="$t(error.enabled_mailboxes)"
+          :invalid-message="$t(error.localuser)"
           tooltipAlignment="start"
           tooltipDirection="top"
           ref="localuser"
@@ -46,24 +46,28 @@
           v-model.trim="task.remoteusername"
           :label="$t('tasks.remoteusername')"
           ref="remoteusername"
+          :invalid-message="$t(error.remoteusername)"
         />
         <NsTextInput
           v-model.trim="task.remotepassword"
           type="password"
           :label="$t('tasks.remotepassword')"
           ref="remotepassword"
+          :invalid-message="$t(error.remotepassword)"
         />
         <NsTextInput
           v-model.trim="task.remotehostname"
           :label="$t('tasks.remotehostname')"
           placeholder="imap.domain.com"
           ref="remotehostname"
+          :invalid-message="$t(error.remotehostname)"
         />
         <NsTextInput
           v-model.trim="task.remoteport"
           type="number"
           :label="$t('tasks.remoteport')"
           ref="remoteport"
+          :invalid-message="$t(error.remoteport)"
         />
         <cv-dropdown
           :light="true"
@@ -239,8 +243,16 @@ export default {
       this.clearErrors(this);
 
       let isValidationOk = true;
+      if (!this.task.localuser) {
+        this.error.localuser = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("localuser");
+        }
+        isValidationOk = false;
+      }
       if (!this.task.remoteusername) {
-        this.error.host = "common.required";
+        this.error.remoteusername = "common.required";
 
         if (isValidationOk) {
           this.focusElement("remoteusername");
@@ -248,7 +260,7 @@ export default {
         isValidationOk = false;
       }
       if (!this.task.remotepassword) {
-        this.error.host = "common.required";
+        this.error.remotepassword = "common.required";
 
         if (isValidationOk) {
           this.focusElement("remotepassword");
@@ -256,7 +268,7 @@ export default {
         isValidationOk = false;
       }
       if (!this.task.remotehostname) {
-        this.error.host = "common.required";
+        this.error.remotehostname = "common.required";
 
         if (isValidationOk) {
           this.focusElement("remotehostname");
@@ -264,7 +276,7 @@ export default {
         isValidationOk = false;
       }
       if (!this.task.remoteport) {
-        this.error.host = "common.required";
+        this.error.remoteport = "common.required";
 
         if (isValidationOk) {
           this.focusElement("remoteport");
