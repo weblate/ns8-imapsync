@@ -176,19 +176,19 @@
             $t("tasks.no_cron")
           }}</cv-dropdown-item>
           <cv-dropdown-item value="5m"
-            >5 {{ $t("tasks.minutes") }}</cv-dropdown-item
+            >{{ $t("tasks.every") }} 5 {{ $t("tasks.minutes") }}</cv-dropdown-item
           >
           <cv-dropdown-item value="15m"
-            >15 {{ $t("tasks.minutes") }}</cv-dropdown-item
+            >{{ $t("tasks.every") }} 15 {{ $t("tasks.minutes") }}</cv-dropdown-item
           >
           <cv-dropdown-item value="30m"
-            >30 {{ $t("tasks.minutes") }}</cv-dropdown-item
+            >{{ $t("tasks.every") }} 30 {{ $t("tasks.minutes") }}</cv-dropdown-item
           >
           <cv-dropdown-item value="45m"
-            >45 {{ $t("tasks.minutes") }}</cv-dropdown-item
+            >{{ $t("tasks.every") }} 45 {{ $t("tasks.minutes") }}</cv-dropdown-item
           >
           <cv-dropdown-item value="1h"
-            >1 {{ $t("tasks.hour") }}</cv-dropdown-item
+            >{{ $t("tasks.every") }} 1 {{ $t("tasks.hour") }}</cv-dropdown-item
           >
         </cv-dropdown>
       </cv-form>
