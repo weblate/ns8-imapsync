@@ -56,7 +56,7 @@
                 :flipMenu="true"
                 tipPosition="top"
                 tipAlignment="end"
-                class="page-toolbar-item kebab-height"
+                class="page-toolbar-item kebab-height mg-left"
               >
                 <cv-overflow-menu-item @click="startAllTasks">
                   <NsMenuItem :icon="Play20" :label="$t('tasks.start_all')" />
