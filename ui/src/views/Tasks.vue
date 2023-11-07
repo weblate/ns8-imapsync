@@ -107,6 +107,15 @@
                 </template>
                 <template v-else>
                   <NsEmptyState :title="$t('tasks.no_email_server')">
+                    <template #description>
+                      <NsButton
+                        kind="ghost"
+                        class="title"
+                        :icon="ArrowRight20"
+                        @click="goToAppPage(instanceName, 'settings')"
+                        >{{ $t("tasks.configure_imapsync") }}
+                      </NsButton>
+                    </template>
                   </NsEmptyState>
                 </template>
               </template>

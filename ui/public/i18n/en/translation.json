@@ -76,7 +76,7 @@
     "select_your_encryption": "Select encryption",
     "encryption_depends_remote_server": "The encryption is required by the remote IMAP server",
     "no_more_task": "No more task",
-    "no_email_server":"No email server set, go to the Settings",
+    "no_email_server":"No email server set, go to the settings",
     "local_user":"Local user",
     "choose_local_user":"Choose a local user to sync the messages",
     "choose_the_user_to_sync": "Choose a user managed by your email server to synchronize the remote messages",
@@ -109,7 +109,8 @@
     "something_wrong_cannot_list_informations": "Something went wront we cannot list the remote and account informations",
     "informations": "Informations",
     "fetching_statistic_please_wait":"Waiting to retrieve statictics, please wait",
-    "every":"every"
+    "every":"every",
+    "configure_imapsync": "Go to the settings"
 
   },
   "about": {
