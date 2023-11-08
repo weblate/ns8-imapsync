@@ -97,7 +97,7 @@
     "synchronize_folders_explanation": "You can decide to make a full synchronization, only INBOX, or folders exclusion",
     "synchronize_only_INBOX": "Synchronize only INBOX",
     "syncronize_all": "Synchronize all recursively",
-    "syncronize_all_with_exclusion": "Synchronize all with exclusions",
+    "syncronize_with_exclusion": "Synchronize with exclusions",
     "start_by^_and_end_by$": "For exact match you should start by ^ and end by $",
     "local_account_host2Folders": "Folders on local account",
     "remote_account_host1Folders": "Folders on remote account",

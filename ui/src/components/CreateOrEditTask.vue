@@ -98,19 +98,19 @@
         <cv-radio-group vertical class="mg-bottom mg-left">
           <cv-radio-button
             :name="'radio-group-foldersynchronization'"
-            :label="$t('tasks.synchronize_only_INBOX')"
-            value="inbox"
-            v-model="task.foldersynchronization"
-          />
-          <cv-radio-button
-            :name="'radio-group-foldersynchronization'"
             :label="$t('tasks.syncronize_all')"
             value="all"
             v-model="task.foldersynchronization"
           />
           <cv-radio-button
             :name="'radio-group-foldersynchronization'"
-            :label="$t('tasks.syncronize_all_with_exclusion')"
+            :label="$t('tasks.synchronize_only_INBOX')"
+            value="inbox"
+            v-model="task.foldersynchronization"
+          />
+          <cv-radio-button
+            :name="'radio-group-foldersynchronization'"
+            :label="$t('tasks.syncronize_with_exclusion')"
             value="exclusion"
             v-model="task.foldersynchronization"
           />
