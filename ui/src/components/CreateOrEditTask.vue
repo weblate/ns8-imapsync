@@ -66,6 +66,7 @@
         />
         <cv-dropdown
           :light="true"
+          class="max-dropdown-width"
           :value="task.security"
           v-model="task.security"
           :up="false"
@@ -159,6 +160,7 @@
         </cv-radio-group>
         <cv-dropdown
           :light="true"
+          class="max-dropdown-width"
           :value="task.cron"
           v-model="task.cron"
           :up="false"
@@ -381,5 +383,8 @@ export default {
 }
 .mg-left {
   margin-left: 1rem !important;
+}
+.max-dropdown-width {
+  max-width: 38rem;
 }
 </style>
