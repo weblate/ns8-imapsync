@@ -151,12 +151,12 @@
             value="delete_remote"
             v-model="task.delete"
           />
-          <cv-radio-button
+          <!-- <cv-radio-button
             :name="'radio-group-delete_remote'"
             :label="$t('tasks.delete_on_local')"
             value="delete_local"
             v-model="task.delete"
-          />
+          /> -->
         </cv-radio-group>
         <cv-dropdown
           :light="true"

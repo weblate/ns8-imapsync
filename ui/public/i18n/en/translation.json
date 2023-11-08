@@ -86,7 +86,7 @@
     "select_your_cron": "select your task frequency",
     "set_when_you_want_the_task_start": "Select when to start your task",
     "remove_mails":"Messages removal",
-    "imapsync_removal_explanation":"Imapsync can remove messages on remote once synchronized on the local server or remove all messages on local that are not on the remote server",
+    "imapsync_removal_explanation":"Imapsync can remove messages on remote once synchronized on the local server",
     "no_deletion":"No deletion",
     "delete_on_remote":"Delete messages on remote once synchronized",
     "bad_user_credentials": "Verify the user credentials, the remote server refused to authenticate",
