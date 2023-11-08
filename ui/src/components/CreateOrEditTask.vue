@@ -17,6 +17,16 @@
     }}</template>
     <template slot="content">
       <cv-form>
+        <cv-row v-if="error.createTask">
+          <cv-column>
+            <NsInlineNotification
+              kind="error"
+              :title="$t('tasks.create_task')"
+              :description="error.createTask"
+              :showCloseButton="false"
+            />
+          </cv-column>
+        </cv-row>
         <NsComboBox
           v-if="!isEdit"
           :options="enabled_mailboxes"
