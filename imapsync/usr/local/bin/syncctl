@@ -41,7 +41,7 @@ if [[ "$action" == "start" ]]; then
         --fastio1 --fastio2 --buffersize 8192000 \
         --host1 "${REMOTEHOSTNAME}"  --user1 "${REMOTEUSERNAME}"  \
         --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  "$gmail" \
-        --host2 "${MAIL_HOSTNAME}"  --user2 "${LOCALUSER}*vmail" \
+        --host2 "${MAIL_HOST}"  --user2 "${LOCALUSER}*vmail" \
         --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
         ${FOLDER_INBOX} --exclude "^Public$|^Shared$"${exclude_regex}"" > /proc/1/fd/1 2>&1
 
@@ -64,7 +64,7 @@ elif [[ "$action" == "validation" ]];then
      /usr/bin/imapsync  --nolog \
         --host1 "${REMOTEHOSTNAME}"  --user1 "${REMOTEUSERNAME}"  \
         --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  \
-        --host2 "${MAIL_HOSTNAME}" --user2 "${LOCALUSER}*vmail" \
+        --host2 "${MAIL_HOST}" --user2 "${LOCALUSER}*vmail" \
         --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
         --justlogin --timeout 10
 
@@ -82,7 +82,7 @@ elif [[ "$action" == "list-informations" ]]; then
     --fastio1 --fastio2 --buffersize 8192000 \
     --host1 "${REMOTEHOSTNAME}"  --user1 "${REMOTEUSERNAME}"  \
     --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  "$gmail" \
-    --host2 "${MAIL_HOSTNAME}"  --user2 "${LOCALUSER}*vmail" \
+    --host2 "${MAIL_HOST}"  --user2 "${LOCALUSER}*vmail" \
     --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
     ${FOLDER_INBOX} --exclude "^Public$|^Shared$"${exclude_regex}"" --justfoldersizes --timeout1 10
 fi

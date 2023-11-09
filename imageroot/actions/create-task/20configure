@@ -62,8 +62,8 @@ if cron != "":
     elif 'm' in cron:
         cron_env = "*/"+cron.replace('m','')+" * * * * root /usr/local/bin/syncctl start "+localuser+'_'+task_id
     f = open("./cron/"+localuser+'_'+task_id+".cron", "w", encoding="utf-8")
-    # MAIL_HOSTNAME is an env variable used by perl/imapsync 
-    f.write('MAIL_HOSTNAME='+os.environ['MAIL_HOSTNAME']+"\n")
+    # MAIL_HOST is an env variable used by perl/imapsync 
+    f.write('MAIL_HOST='+os.environ['MAIL_HOST']+"\n")
     f.write(cron_env+"\n")
     f.close()
 # cron does not exist we remove or ignore

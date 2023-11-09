@@ -28,7 +28,7 @@ ExecStart=/usr/bin/podman run \
     --cidfile=%t/imapsync.ctr-id \
     --cgroups=no-conmon \
     --replace --name=%N \
-    --env MAIL_HOSTNAME=${MAIL_HOSTNAME} \
+    --env MAIL_HOST=${MAIL_HOST} \
     --volume ./imapsync:/etc/imapsync:z \
     --volume ./cron:/etc/cron.d:z \
     ${IMAPSYNC_BINARY_IMAGE} /usr/sbin/crond -f -m off

@@ -9,7 +9,7 @@
         "mail_server": {
             "type": "string"
         },
-        "mail_hostname": {
+        "mail_host": {
             "type": "string"
         },
         "mail_server_URL": {
@@ -37,7 +37,7 @@
     },
     "required": [
         "mail_server",
-        "mail_hostname",
+        "mail_host",
         "mail_server_URL"
     ]
 }

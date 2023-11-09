@@ -18,13 +18,13 @@ We need to bind imapsync to a mail server inside the cluster, we use the MODULE_
 
 Launch `configure-module`, by setting the following parameters:
 - `mail_server`: module uuid of the mail server
-- `mail_hostname`: mail hostname of the mail server
+- `mail_host`: local ip of the mail server
 
 Example:
 
     api-cli run module/imapsync1/configure-module --data '{
         "mail_server":"8dd3b3fe-609c-42f7-a2d1-cecba9461bea",
-        "mail_hostname":"foo.domain.com"
+        "mail_host":"10.5.4.1"
     }'
 
 The above command will:
@@ -111,12 +111,12 @@ Answer:
 ```json
 {
   "mail_server": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf",
-  "mail_hostname": "R3.rocky9-3.org",
+  "mail_host": "10.5.4.1",
   "mail_server_URL": [
     {
       "name": "mail2",
       "label": "mail2 (R3.rocky9-3.org)",
-      "value": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf,R3.rocky9-3.org"
+      "value": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf,10.5.4.1"
     }
   ],
 }
@@ -217,7 +217,7 @@ in case of error you will have
 in the state folder of the imapsync module you can find environment file (`*.env`), password file (`*.pwd`) and lock file when a task is running (`*.lock`)
 You can filter by the task name (locauser to sync + task_id)
 
-The vmail.pwd file is the credential of the dovecote master user
+The vmail.pwd file is the credential of the dovecot master user
 
 ```
 .config/state/

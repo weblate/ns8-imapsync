@@ -16,6 +16,6 @@ data = json.load(sys.stdin)
 
 # module_uuid of the mailserver binded
 mail_server= data['mail_server']
-mail_hostname = data['mail_hostname']
+mail_host = data['mail_host']
 agent.set_env("MAIL_SERVER",mail_server)
-agent.set_env("MAIL_HOSTNAME",mail_hostname)
+agent.set_env("MAIL_HOST",mail_host)

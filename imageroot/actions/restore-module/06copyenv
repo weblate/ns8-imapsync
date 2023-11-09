@@ -15,6 +15,6 @@ original_environment = request['environment']
 
 for evar in [
         "MAIL_SERVER",
-        "MAIL_HOSTNAME"
+        "MAIL_HOST"
     ]:
      agent.set_env(evar, original_environment[evar])

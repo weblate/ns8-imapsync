@@ -97,7 +97,7 @@ export default {
       },
       urlCheckInterval: null,
       mail_server: "",
-      mail_hostname: "",
+      mail_host: "",
       mail_server_URL: [],
       loading: {
         getConfiguration: false,
@@ -175,9 +175,9 @@ export default {
       this.mail_server_URL = config.mail_server_URL;
       this.$nextTick(() => {
         const mail_server_tmp = config.mail_server;
-        const mail_hostname_tmp = config.mail_hostname;
-        if (mail_server_tmp && mail_hostname_tmp) {
-          this.mail_server = mail_server_tmp + "," + mail_hostname_tmp;
+        const mail_host_tmp = config.mail_host;
+        if (mail_server_tmp && mail_host_tmp) {
+          this.mail_server = mail_server_tmp + "," + mail_host_tmp;
         } else {
           this.mail_server = "";
         }
@@ -242,13 +242,13 @@ export default {
       );
       const tmparray = this.mail_server.split(",");
       const mail_server_tmp = tmparray[0];
-      const mail_hostname_tmp = tmparray[1];
+      const mail_host_tmp = tmparray[1];
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
           data: {
             mail_server: mail_server_tmp,
-            mail_hostname: mail_hostname_tmp,
+            mail_host: mail_host_tmp,
           },
           extra: {
             title: this.$t("settings.instance_configuration", {

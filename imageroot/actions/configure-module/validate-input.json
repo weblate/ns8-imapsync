@@ -6,21 +6,21 @@
     "examples": [
         {
             "mail_server": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf",
-            "mail_hostname": "mail.domain.com"
+            "mail_host": "10.5.4.1"
         }
     ],
     "type": "object",
     "required": [
         "mail_server",
-        "mail_hostname"
+        "mail_host"
     ],
     "additionalProperties": false,
     "properties": {
-        "mail_hostname": {
+        "mail_host": {
             "type": "string",
             "description": "Host name for the remote account",
             "format": "idn-hostname",
-            "title": "mail_hostname"
+            "title": "mail_host"
         },
         "mail_server": {
             "type": "string",
