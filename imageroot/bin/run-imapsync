@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# helper to trigger users task. we need two arguments
+
+action=${1:-}
+task_id=${2:-}
+
+if [[ "$action" == 'start' ]];then
+    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl start "$task_id"
+elif [[ "$action" == 'restart' ]];then
+    /usr/bin/podman exec imapsync /usr/local/bin/syncctl stop "$task_id"
+    /usr/bin/podman exec -d imapsync /usr/local/bin/syncctl start "$task_id"
+elif [[ "$action" == 'stop' ]];then
+    /usr/bin/podman exec imapsync /usr/local/bin/syncctl stop "$task_id"
+fi

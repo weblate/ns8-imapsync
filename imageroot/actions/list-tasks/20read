@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+#
+# Read configuration
+#
+
+import os
+import sys
+import json
+import agent
+import glob
+import subprocess
+
+# Prepare return variable
+config = {}
+
+rdb = agent.redis_connect() # full read-only access on every key
+
+mail_server = os.getenv("MAIL_SERVER", "") # the value is the Mail module UUID!
+
+# we want to find all enabled mailbox, first retrieve the mail server we are bound
+# second retrieve the mail box by action list-user-mailboxes and make a list of enabled mailbox
+# read env files, test if mailbox is enabled to push to config[user_properties]
+if mail_server == "":
+    config['user_properties'] = []
+    config['enabled_mailboxes'] = []
+else: 
+    # retrieve mail module_id from module_uuid
+    mail_server = os.environ["MAIL_SERVER"]
+    providers = agent.list_service_providers(rdb, 'imap', 'tcp', {
+        'module_uuid': mail_server,
+    })
+    mail_id = providers[0]["module_id"]
+    response = agent.tasks.run(f"module/{mail_id}", action='list-user-mailboxes')
+    agent.assert_exp(response['exit_code'] == 0)
+    user_mailboxes = response['output']['user_mailboxes']
+    
+    # Create a dictionary to store enabled user mailboxes
+    config['enabled_mailboxes'] = []
+    
+    # Iterate through user_mailboxes and filter by 'enabled' (if the field exists)
+    for mailbox in user_mailboxes:
+        if 'enabled' in mailbox and not mailbox['enabled']:
+            continue  # Skip disabled mailboxes
+        box = {
+                "name": mailbox['user'],
+                "label": mailbox['user'],
+                "value": mailbox['user']
+            }
+        config['enabled_mailboxes'].append(box)
+
+    # we load env file from imapsync/*.env and remote password
+    user_properties = []
+    env_files = list(glob.iglob("imapsync/*.env"))
+    for task_id in env_files:
+        task_id = task_id.removesuffix('.env').removeprefix('imapsync/')
+        data = agent.read_envfile('imapsync/'+task_id+'.env')
+        # we want minor keys
+        data = {key.lower(): value for key, value in data.items()}
+             
+        if "security" in data and data["security"] == "--tls1":
+            data["security"] = "tls"
+        elif "security" in data and data["security"] == "--ssl1":
+            data["security"] = "ssl"
+        elif "security" in data and data["security"] == "":
+            data["security"] = ""
+        if "delete_local" in data and data["delete_local"] == "--delete2":
+            data["delete_local"] = True
+        elif "delete_local" in data and data["delete_local"] == "":
+            data["delete_local"] = False
+        if "delete_remote" in data and data["delete_remote"] == "--delete1":
+            data["delete_remote"] = True
+        elif "delete_remote" in data and data["delete_remote"] == "":
+            data["delete_remote"] = False
+    
+        # remote password (single line)
+        with open('imapsync/'+task_id+'.pwd', 'r') as file:
+            env_lines = file.readlines()
+        for line in env_lines:
+            data['remotepassword']=line
+        #test if service is running 
+        service_status = True if os.path.exists("imapsync/"+task_id+".pid") else False
+       
+        data["service_running"]=service_status
+        user_properties.append(data)
+    
+    # Serialize the JSON read_fileect to a JSON-formatted string
+    config['user_properties'] = user_properties
+
+# Dump the configuration to stdout
+json.dump(config, fp=sys.stdout)

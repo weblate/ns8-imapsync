@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2022 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import json
+import glob
+import os
+
+data = json.load(sys.stdin)
+task_id = data["task_id"]
+localuser = data["localuser"]
+
+for file in glob.iglob("imapsync/"+localuser+'_'+task_id+".*"):
+    os.remove(file)

@@ -1,33 +1,4 @@
 # ns8-imapsync
-
-This is a template module for [NethServer 8](https://github.com/NethServer/ns8-core).
-To start a new module from it:
-
-1. Click on [Use this template](https://github.com/NethServer/ns8-imapsync/generate).
-   Name your repo with `ns8-` prefix (e.g. `ns8-mymodule`). 
-   Do not end your module name with a number, like ~~`ns8-baaad2`~~!
-
-1. Clone the repository, enter the cloned directory and
-   [configure your GIT identity](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup#_your_identity)
-
-1. Rename some references inside the repo:
-   ```
-   modulename=$(basename $(pwd) | sed 's/^ns8-//')
-   git mv imageroot/systemd/user/imapsync.service imageroot/systemd/user/${modulename}.service
-   git mv tests/imapsync.robot tests/${modulename}.robot
-   sed -i "s/imapsync/${modulename}/g" $(find .github/ * -type f)
-   git commit -a -m "Repository initialization"
-   ```
-
-1. Edit this `README.md` file, by replacing this section with your module
-   description
-
-1. Adjust `.github/workflows` to your needs. `clean-registry.yml` might
-   need the proper list of image names to work correctly. Unused workflows
-   can be disabled from the GitHub Actions interface.
-
-1. Commit and push your local changes
-
 ## Install
 
 Instantiate the module with:
@@ -43,42 +14,232 @@ Output example:
 
 Let's assume that the imapsync instance is named `imapsync1`.
 
+We need to bind imapsync to a mail server inside the cluster, we use the MODULE_UUID of mail server to configure imapsync, reveal the vmail master secret of local users and start the container waiting for cron tasks or individual user tasks
+
 Launch `configure-module`, by setting the following parameters:
-- `<MODULE_PARAM1_NAME>`: <MODULE_PARAM1_DESCRIPTION>
-- `<MODULE_PARAM2_NAME>`: <MODULE_PARAM2_DESCRIPTION>
-- ...
+- `mail_server`: module uuid of the mail server
+- `mail_host`: local ip of the mail server
 
 Example:
 
-    api-cli run module/imapsync1/configure-module --data '{}'
+    api-cli run module/imapsync1/configure-module --data '{
+        "mail_server":"8dd3b3fe-609c-42f7-a2d1-cecba9461bea",
+        "mail_host":"10.5.4.1"
+    }'
 
 The above command will:
 - start and configure the imapsync instance
-- (describe configuration process)
-- ...
 
-Send a test HTTP request to the imapsync backend service:
+## start to sync a remote imap account to local user account
 
-    curl http://127.0.0.1/imapsync/
+security : "tls" or "ssl" or ""
+- delete mails and folder on local account not in remote account
+delete_local: true, false
+- delete mails on remote account once synchronized to localaccount
+delete_remote: true, false
+- exclude folders prepend by `^` and end by `$`
+exclude: folder1,folder2,^folder3$
+- start tasks by a cron (use 5m for minute, 2h for hour: start a cron `0/5 * * * *` or `1 */2 * * *`)
+cron: 5m
+- the remote imap account credentials (you can use the password of the imap master administrator if you know it, for example vmail. use the login user*vmail and the relevant password). Otherwise use the login and the password of the remote account.
+- foldersynchronization: synchronize `all`, only what is in `inbox` or `all but with exclusion` ("all","inbox","exclusion")
+- task_id : must be unical, set by a random function by the UI
 
-## Smarthost setting discovery
+Example:
 
-Some configuration settings, like the smarthost setup, are not part of the
-`configure-module` action input: they are discovered by looking at some
-Redis keys.  To ensure the module is always up-to-date with the
-centralized [smarthost
-setup](https://nethserver.github.io/ns8-core/core/smarthost/) every time
-imapsync starts, the command `bin/discover-smarthost` runs and refreshes
-the `state/smarthost.env` file with fresh values from Redis.
+    api-cli run module/imapsync1/create-task --data '{
+        "localuser":"administrator",
+        "remotehostname":"imap.foo.com",
+        "remoteport":143,
+        "security":"tls",
+        "delete_local": false,
+        "delete_remote": false,
+        "exclude":"folder1,folder2",
+        "remoteusername":"username",
+        "remotepassword":"password",
+        "cron":"5m",
+        "task_id": "a0241w",
+        "foldersynchronization": "all"
+    }'
 
-Furthermore if smarthost setup is changed when imapsync is already
-running, the event handler `events/smarthost-changed/10reload_services`
-restarts the main module service.
+## delete env and stop a running synchronisation
 
-See also the `systemd/user/imapsync.service` file.
+Example:
 
-This setting discovery is just an example to understand how the module is
-expected to work: it can be rewritten or discarded completely.
+    api-cli run module/imapsync1/delete-task --data '{
+        "localuser":"administrator"
+    }'
+
+## stop a running synchronisation
+
+Example:
+
+    api-cli run module/imapsync1/stop-task --data '{
+        "localuser":"administrator"
+    }'
+
+## start a running synchronisation
+
+Example:
+
+    api-cli run module/imapsync1/start-task --data '{
+        "localuser":"administrator"
+    }'
+
+## start all configured tasks
+Read all `imapsync/*.env` files and start the synchronization
+
+Example:
+
+    api-cli run module/imapsync1/start-all-tasks
+
+## stop all configured tasks
+Read all `imapsync/*.env` files and stop the synchronization
+
+Example:
+
+    api-cli run module/imapsync1/stop-all-tasks
+
+## read configuration
+
+Example:
+
+    api-cli run module/imapsync1/get-configuration
+
+Answer:
+
+```json
+{
+  "mail_server": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf",
+  "mail_host": "10.5.4.1",
+  "mail_server_URL": [
+    {
+      "name": "mail2",
+      "label": "mail2 (R3.rocky9-3.org)",
+      "value": "e8a6177c-9ae5-4356-826b-0a5f93b2dbaf,10.5.4.1"
+    }
+  ],
+}
+```
+
+## list-tasks
+
+Read configuration from `environment` and from `imapsync/*.{env,pwd}`
+
+api-cli run module/imapsync1/list-tasks
+
+```json
+{
+  "enabled_mailboxes": [
+    {
+      "name": "administrator",
+      "label": "administrator",
+      "value": "administrator"
+    },
+    {
+      "name": "foo",
+      "label": "foo",
+      "value": "foo"
+    },
+    {
+      "name": "john",
+      "label": "john",
+      "value": "john"
+    }
+  ],
+  "user_properties": [
+    {
+      "task_id": "qu1dcb",
+      "localuser": "administrator",
+      "remoteusername": "user2@domain.com",
+      "remotehostname": "imap.domain.com",
+      "remoteport": "143",
+      "security": "tls",
+      "delete_local": false,
+      "deletefolder": "",
+      "exclude": "",
+      "delete_remote": false,
+      "expunge_remote": "",
+      "cron": "",
+      "folder_inbox": "",
+      "foldersynchronization": "all",
+      "remotepassword": "password",
+      "service_running": false
+    },
+    {
+      "task_id": "vd2am3",
+      "localuser": "john",
+      "remoteusername": "user@domain.com",
+      "remotehostname": "imap.domain.com",
+      "remoteport": "143",
+      "security": "tls",
+      "delete_local": false,
+      "deletefolder": "",
+      "exclude": "",
+      "delete_remote": false,
+      "expunge_remote": "",
+      "cron": "",
+      "folder_inbox": "",
+      "foldersynchronization": "all",
+      "remotepassword": "password",
+      "service_running": false
+    }
+  ]
+}
+
+```
+
+## list-informations
+
+You can retrieve the email and folder numbers and the email size for the local and remote account
+Example:
+
+    api-cli run module/imapsync9/list-informations --data '{
+      "localuser": "john",
+      "task_id": "vd2am3"
+      }'
+
+output:
+
+```json
+{"status": true, "host1Folders": 78, "host2Folders": 78, "host1Messages": 164625, "host2Messages": 155, "host1Sizes": 3060488650, "host2Sizes": 72036894}
+```
+
+in case of error you will have
+
+```json
+{"status": false}
+```
+
+
+## troubleshot issues
+
+in the state folder of the imapsync module you can find environment file (`*.env`), password file (`*.pwd`) and lock file when a task is running (`*.lock`)
+You can filter by the task name (locauser to sync + task_id)
+
+The vmail.pwd file is the credential of the dovecot master user
+
+```
+.config/state/
+├── cron
+│   ├── foo_a0241w.cron
+│   └── foo_a1j44r.cron
+└── imapsync
+    ├── foo_a0241w.env
+    ├── foo_a0241w.lock
+    ├── foo_a0241w.pwd
+    ├── foo_a1j44r.env
+    ├── foo_a1j44r.pwd
+    └── vmail.pwd
+```
+
+to launch manually a task
+```
+ssh imapsync1@localhost
+podman exec -ti imapsync /usr/local/bin/syncctl start foo_a1j44r
+podman exec -ti imapsync /usr/local/bin/syncctl stop foo_a1j44r
+podman exec -ti imapsync /usr/local/bin/syncctl status foo_a1j44r
+```
 
 ## Uninstall
 

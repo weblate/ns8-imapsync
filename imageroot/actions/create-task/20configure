@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import os
+import sys
+import json
+
+data = json.load(sys.stdin)
+# we want multi task for the same user
+task_id = data["task_id"]
+# Local user to sync on
+localuser = data["localuser"]
+# remote credentials
+remotehostname = data["remotehostname"]
+remoteport = data["remoteport"]
+remoteusername = data["remoteusername"]
+remotepassword = data["remotepassword"]
+
+# security encryption tls,ssl,""
+security = data.get("security",'')
+
+if security == "tls":
+    security = "--tls1"
+elif security == "ssl":
+    security = "--ssl1"
+else:
+    security = ""
+
+# delete on local host folder/emails not on remote
+delete_local = data.get("delete_local",False)
+# delete on remote once migrated
+delete_remote = data.get("delete_remote",False)
+if delete_local:
+    delete_local = "--delete2"
+    delete_folder = "--delete2foders"
+else:
+    delete_local = ""
+    delete_folder = ""
+
+if delete_remote:
+    delete_remote = "--delete1"
+    expunge_remote = "--noexpungeaftereach"
+else:
+    delete_remote = ""
+    expunge_remote = ""
+
+# exclude file if string,string2 
+if data.get("exclude",'') == "":
+    exclude = ''
+else:
+    exclude = ","+ data.get("exclude",'')
+
+# cron
+cron = data.get("cron","")
+if cron != "":
+    if 'h' in cron:
+        cron_env = "1 */"+cron.replace('h','')+" * * *  root /usr/local/bin/syncctl start "+localuser+'_'+task_id
+    elif 'm' in cron:
+        cron_env = "*/"+cron.replace('m','')+" * * * * root /usr/local/bin/syncctl start "+localuser+'_'+task_id
+    f = open("./cron/"+localuser+'_'+task_id+".cron", "w", encoding="utf-8")
+    # MAIL_HOST is an env variable used by perl/imapsync 
+    f.write('MAIL_HOST='+os.environ['MAIL_HOST']+"\n")
+    f.write(cron_env+"\n")
+    f.close()
+# cron does not exist we remove or ignore
+elif cron == "" and os.path.exists("./cron/"+localuser+'_'+task_id+".cron"):
+    os.remove("./cron/"+localuser+'_'+task_id+".cron")
+
+foldersynchronization = data.get("foldersynchronization","all")
+if foldersynchronization == "inbox":
+    folder_inbox = "--folder\ 'INBOX'"
+else:
+    folder_inbox = ""
+
+user_env = f"""
+TASK_ID={task_id}
+LOCALUSER={localuser}
+REMOTEUSERNAME={remoteusername}
+REMOTEHOSTNAME={remotehostname}
+REMOTEPORT={remoteport}
+SECURITY={security}
+DELETE_LOCAL={delete_local}
+DELETEFOLDER={delete_folder}
+EXCLUDE={exclude}
+DELETE_REMOTE={delete_remote}
+EXPUNGE_REMOTE={expunge_remote}
+CRON={cron}
+FOLDER_INBOX={folder_inbox}
+FOLDERSYNCHRONIZATION={foldersynchronization}
+"""
+os.umask(0o77)
+
+f = open("./imapsync/"+localuser+'_'+task_id+".env", "w", encoding="utf-8")
+f.write(user_env)
+f.close()
+
+f = open("./imapsync/"+localuser+'_'+task_id+".pwd", "w", encoding="utf-8")
+f.write(remotepassword)
+f.close()

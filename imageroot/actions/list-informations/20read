@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import sys
+import json
+import subprocess
+import re
+
+data = json.load(sys.stdin)
+localuser = data["localuser"]
+task_id = data["task_id"]
+
+imapsync_args = ["podman","exec","-ti","imapsync","syncctl","list-informations",localuser+'_'+task_id]
+try:
+    process = subprocess.Popen(imapsync_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    stdout, stderr = process.communicate()
+    if process.returncode == 0:
+        ret = {'status': False}  # Set the default status to False 
+        for line in stdout.split('\n'):
+            if 'Host2 Nb folders' in line:
+                ret['host2Folders'] = int(re.search(r'(\d+) folders', line).group(1))
+            elif 'Host2 Nb messages' in line:
+                ret['host2Messages'] = int(re.search(r'(\d+) messages', line).group(1))
+            elif 'Host2 Total size' in line:
+                ret['host2Sizes'] = int(re.search(r'(\d+) bytes', line).group(1))
+            elif 'Host1 Nb folders' in line:
+                ret['host1Folders'] = int(re.search(r'(\d+) folders', line).group(1))
+            elif 'Host1 Nb messages' in line:
+                ret['host1Messages'] = int(re.search(r'(\d+) messages', line).group(1))
+            elif 'Host1 Total size' in line:
+                ret['host1Sizes'] = int(re.search(r'(\d+) bytes', line).group(1))
+        if all(key in ret for key in ('host2Folders', 'host2Messages', 'host2Sizes','host1Folders','host1Messages','host1Sizes')):
+            ret['status'] = True  # Set status to True if all data is present
+
+    else:
+        ret = {'status': False}
+except Exception as e:
+    ret = {'status': False}
+
+json.dump(ret, fp=sys.stdout)
