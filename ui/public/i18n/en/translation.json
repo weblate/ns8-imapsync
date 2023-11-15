@@ -46,6 +46,7 @@
     "col_remotehostname": "IMAP server",
     "col_task_status": "Task status",
     "col_task_id": "Task ID",
+    "col_task_cron": "Task frequency",
     "create": "Create",
     "edit": "Edit",
     "start": "Start",
