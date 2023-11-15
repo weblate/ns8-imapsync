@@ -186,6 +186,10 @@
             >{{ $t("tasks.every") }} 5
             {{ $t("tasks.minutes") }}</cv-dropdown-item
           >
+          <cv-dropdown-item value="10m"
+            >{{ $t("tasks.every") }} 10
+            {{ $t("tasks.minutes") }}</cv-dropdown-item
+          >
           <cv-dropdown-item value="15m"
             >{{ $t("tasks.every") }} 15
             {{ $t("tasks.minutes") }}</cv-dropdown-item
