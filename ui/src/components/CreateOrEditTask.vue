@@ -182,29 +182,24 @@
           <cv-dropdown-item selected value="">{{
             $t("tasks.no_cron")
           }}</cv-dropdown-item>
-          <cv-dropdown-item value="5m"
-            >{{ $t("tasks.every") }} 5
-            {{ $t("tasks.minutes") }}</cv-dropdown-item
-          >
-          <cv-dropdown-item value="10m"
-            >{{ $t("tasks.every") }} 10
-            {{ $t("tasks.minutes") }}</cv-dropdown-item
-          >
-          <cv-dropdown-item value="15m"
-            >{{ $t("tasks.every") }} 15
-            {{ $t("tasks.minutes") }}</cv-dropdown-item
-          >
-          <cv-dropdown-item value="30m"
-            >{{ $t("tasks.every") }} 30
-            {{ $t("tasks.minutes") }}</cv-dropdown-item
-          >
-          <cv-dropdown-item value="45m"
-            >{{ $t("tasks.every") }} 45
-            {{ $t("tasks.minutes") }}</cv-dropdown-item
-          >
-          <cv-dropdown-item value="1h"
-            >{{ $t("tasks.every") }} 1 {{ $t("tasks.hour") }}</cv-dropdown-item
-          >
+          <cv-dropdown-item value="5m">{{
+            $t("tasks.every_minutes", { num: 5 })
+          }}</cv-dropdown-item>
+          <cv-dropdown-item value="10m">{{
+            $t("tasks.every_minutes", { num: 10 })
+          }}</cv-dropdown-item>
+          <cv-dropdown-item value="15m">{{
+            $t("tasks.every_minutes", { num: 15 })
+          }}</cv-dropdown-item>
+          <cv-dropdown-item value="30m">{{
+            $t("tasks.every_minutes", { num: 30 })
+          }}</cv-dropdown-item>
+          <cv-dropdown-item value="45m">{{
+            $t("tasks.every_minutes", { num: 45 })
+          }}</cv-dropdown-item>
+          <cv-dropdown-item value="1h">{{
+            $t("tasks.every_minutes", { num: 60 })
+          }}</cv-dropdown-item>
         </cv-dropdown>
       </cv-form>
       <cv-row v-if="error.createTask">

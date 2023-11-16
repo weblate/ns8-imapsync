@@ -110,7 +110,7 @@
     "something_wrong_cannot_list_informations": "Something went wront we cannot list the remote and account informations",
     "informations": "Informations",
     "fetching_statistic_please_wait":"Waiting to retrieve statictics, please wait",
-    "every":"every",
+    "every_minutes":"Every {num} minutes",
     "configure_imapsync": "Go to the settings"
 
   },
