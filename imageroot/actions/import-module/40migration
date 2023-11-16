@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import uuid
+import os
+
+file_path = './getmail.json'
+
+def remove_file():
+    # Remove the file
+    os.remove(file_path)
+    print(f"File {file_path} removed.")
+
+try:
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+    # Extract properties for type "getmail" with unique IDs
+    getmail_properties = []
+
+    for entry in data:
+        if entry['type'] == 'getmail':
+            props = entry['props']
+            unique_id = str(uuid.uuid4())[:6]
+            properties = {
+                'ID': unique_id,
+                'Account': props['Account'],
+                'Password': props.get('Password', ''),
+                'Server': props['Server'],
+                'Username': props['Username'],
+                'Retriever': props['Retriever'],
+                'Delete': props.get('Delete', ''),
+                'Time': props.get('Time', ''),
+                'Status': props.get('status', ''),
+                'FilterCheck': props.get('FilterCheck', '')
+            }
+            getmail_properties.append(properties)
+
+    # iterate over keys and write tasks files
+    for properties in getmail_properties:
+        task_id = properties['ID'] 
+        localuser = properties['Account'].split('@')[0]
+        remotehostname = properties['Server']
+        # convert getmail protocol to imapsync protocol
+        if properties['Retriever'] == "SimplePOP3Retriever":
+            remoteport = "143"
+            security = ""
+            # Pop3 to IMAP not sure it will work, we disable
+            cron = ""
+        elif properties['Retriever'] == "SimplePOP3SSLRetriever":
+            remoteport = "993"
+            security = "--ssl1"
+            # Pop3 to IMAP not sure it will work, we disable
+            cron = ""
+        elif properties['Retriever'] == "SimpleIMAPRetriever":
+            remoteport = '143'
+            security = ''
+            cron = properties['Time']
+        elif properties['Retriever'] == "SimpleIMAPSSLRetriever":
+            remoteport = '993'
+            security = '--ssl1'
+            cron = properties['Time']
+        remoteusername = properties['Username']
+        remotepassword = properties['Password']
+
+        # options not available in getmail, we disable for validation
+        delete_local = ""
+        delete_folder = ""
+
+        # delete on remote once migrated
+        delete_remote = properties['Delete']
+
+        # in imapsync we just have an option to remove it immediately
+        if delete_remote != "-1":
+            delete_remote = "--delete1"
+            expunge_remote = "--noexpungeaftereach"
+        else:
+            delete_remote = ""
+            expunge_remote = ""
+
+        # not available in getmail, we disable for validation
+        exclude = ""
+
+        # cron
+        if cron != "":
+            if cron == '60':
+                cron_env = "1 */1 * * *  root /usr/local/bin/syncctl start "+localuser+'_'+task_id
+                cron = '1h'
+            else:
+                cron_env = "*/"+cron+" * * * * root /usr/local/bin/syncctl start "+localuser+'_'+task_id
+                cron = cron + 'm'
+            f = open("./cron/"+localuser+'_'+task_id+".cron", "w", encoding="utf-8")
+            # MAIL_HOST is an env variable used by perl/imapsync 
+            f.write('MAIL_HOST='+os.environ['MAIL_HOST']+"\n")
+            f.write(cron_env+"\n")
+            f.close()
+
+        foldersynchronization = "inbox"
+        folder_inbox = "--folder\ 'INBOX'"
+
+        user_env = f"""
+TASK_ID={task_id}
+LOCALUSER={localuser}
+REMOTEUSERNAME={remoteusername}
+REMOTEHOSTNAME={remotehostname}
+REMOTEPORT={remoteport}
+SECURITY={security}
+DELETE_LOCAL={delete_local}
+DELETEFOLDER={delete_folder}
+EXCLUDE={exclude}
+DELETE_REMOTE={delete_remote}
+EXPUNGE_REMOTE={expunge_remote}
+CRON={cron}
+FOLDER_INBOX={folder_inbox}
+FOLDERSYNCHRONIZATION={foldersynchronization}
+        """
+        os.umask(0o77)
+
+        f = open("./imapsync/"+localuser+'_'+task_id+".env", "w", encoding="utf-8")
+        f.write(user_env)
+        f.close()
+
+        f = open("./imapsync/"+localuser+'_'+task_id+".pwd", "w", encoding="utf-8")
+        f.write(remotepassword)
+        f.close()
+
+except Exception as e:
+    print(f"An error occurred: {str(e)}")
+
+# remove 
+finally:
+    remove_file()
