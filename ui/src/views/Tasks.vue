@@ -138,6 +138,15 @@
                   </cv-data-table-cell>
                   <cv-data-table-cell>
                     {{
+                      row.cron === ""
+                        ? $t("tasks.no_cron")
+                        : row.cron === "1h"
+                        ?  parseInt(row.cron) + " " + $t("tasks.hour")
+                        :  parseInt(row.cron) + " " + $t("tasks.minutes")
+                    }}
+                  </cv-data-table-cell>
+                  <cv-data-table-cell>
+                    {{
                       row.service ? $t("tasks.running") : $t("tasks.stopped")
                     }}
                   </cv-data-table-cell>
@@ -270,6 +279,7 @@ export default {
         "localuser",
         "remoteusername",
         "remotehostname",
+        "task_cron",
         "task_status",
         "task_id",
       ],
