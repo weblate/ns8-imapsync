@@ -83,7 +83,7 @@
     "choose_the_user_to_sync": "Choose a user managed by your email server to synchronize the remote messages",
     "hour":"hour",
     "minutes":"minutes",
-    "no_cron": "No Scheduled",
+    "no_cron": "Not scheduled",
     "select_your_cron": "select your task frequency",
     "set_when_you_want_the_task_start": "Select when to start your task",
     "remove_mails":"Messages removal",
