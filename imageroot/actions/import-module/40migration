@@ -141,4 +141,4 @@ FOLDERSYNCHRONIZATION={foldersynchronization}
 
 # Remove the file
 os.remove(file_path)
-print(f"File {file_path} removed.")
+print(f"File {file_path} removed.", file=sys.stderr)
