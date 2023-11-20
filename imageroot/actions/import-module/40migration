@@ -139,3 +139,6 @@ FOLDERSYNCHRONIZATION={foldersynchronization}
     f.write(remotepassword)
     f.close()
 
+# Remove the file
+os.remove(file_path)
+print(f"File {file_path} removed.")
