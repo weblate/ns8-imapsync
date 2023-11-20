@@ -8,17 +8,9 @@
 import json
 import uuid
 import os
-import atexit
+import sys
 
 file_path = './getmail.json'
-
-def remove_file():
-    # Remove the file
-    os.remove(file_path)
-    print(f"File {file_path} removed.")
-
-# register the function to be called on exit
-atexit.register(remove_file)
 
 with open(file_path, 'r') as file:
     data = json.load(file)
@@ -32,21 +24,36 @@ for entry in data:
         unique_id = str(uuid.uuid4())[:6]
         properties = {
             'ID': unique_id,
-            'Account': props['Account'],
+            'Account': props.get('Account',''),
             'Password': props.get('Password', ''),
-            'Server': props['Server'],
-            'Username': props['Username'],
-            'Retriever': props['Retriever'],
+            'Server': props.get('Server',''),
+            'Username': props.get('Username',''),
+            'Retriever': props.get('Retriever',''),
             'Delete': props.get('Delete', ''),
             'Time': props.get('Time', ''),
             'Status': props.get('status', ''),
             'FilterCheck': props.get('FilterCheck', '')
         }
+        if properties['Account'] == "":
+            print("Account: no argument given", file=sys.stderr)
+            continue                # skip empty accounts
+        elif properties['Password'] == "":
+            print("Password: no argument given", file=sys.stderr)
+            continue                # skip accounts without password
+        elif properties['Server'] == "":
+            print("Server: no argument given", file=sys.stderr)
+            continue                # skip accounts without server
+        elif properties['Username'] == "":
+            print("Username: no argument given", file=sys.stderr)
+            continue                # skip accounts without username
+        elif properties['Retriever'] == "":
+            print("Retriever: no argument given", file=sys.stderr)
+            continue            # skip accounts without retriever
         getmail_properties.append(properties)
 
 # iterate over keys and write tasks files
 for properties in getmail_properties:
-    task_id = properties['ID'] 
+    task_id = properties['ID']
     localuser = properties['Account'].split('@')[0]
     remotehostname = properties['Server']
     # convert getmail protocol to imapsync protocol
@@ -131,3 +138,4 @@ FOLDERSYNCHRONIZATION={foldersynchronization}
     f = open("./imapsync/"+localuser+'_'+task_id+".pwd", "w", encoding="utf-8")
     f.write(remotepassword)
     f.close()
+
