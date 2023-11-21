@@ -109,8 +109,8 @@ for properties in getmail_properties:
             cron_env = "*/"+cron+" * * * * root /usr/local/bin/syncctl start "+localuser+'_'+task_id
             cron = cron + 'm'
         f = open("./cron/"+localuser+'_'+task_id+".cron", "w", encoding="utf-8")
-        # MAIL_HOST is an env variable used by perl/imapsync 
-        f.write('MAIL_HOST='+os.environ['MAIL_HOST']+"\n")
+        # # MAIL_HOST is an env variable used by perl/imapsync 
+        # f.write('MAIL_HOST='+os.environ['MAIL_HOST']+"\n")
         f.write(cron_env+"\n")
         f.close()
 
