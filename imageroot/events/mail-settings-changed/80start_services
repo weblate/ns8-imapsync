@@ -21,6 +21,6 @@ if event['module_uuid'] == os.getenv('MAIL_SERVER', ''):
    providers = agent.list_service_providers(rdb, 'imap', 'tcp', {
       'module_uuid': mail_server,
    })
-   mail_host = providers[0]["mail_host"]
+   mail_host = providers[0]["host"]
    agent.set_env("MAIL_HOST",mail_host)
    agent.run_helper("systemctl", "--user", "try-restart", "imapsync.service").check_returncode()

@@ -10,6 +10,10 @@ import uuid
 import os
 import sys
 
+# create directories
+os.makedirs('imapsync', exist_ok=True)
+os.makedirs('cron', exist_ok=True)
+
 file_path = './getmail.json'
 
 with open(file_path, 'r') as file:
@@ -96,19 +100,12 @@ for properties in getmail_properties:
     # not available in getmail, we disable for validation
     exclude = ""
 
-    # cron
+    # Cron is expanded before the service start
     if cron != "":
         if cron == '60':
-            cron_env = "1 */1 * * *  root /usr/local/bin/syncctl start "+localuser+'_'+task_id
             cron = '1h'
         else:
-            cron_env = "*/"+cron+" * * * * root /usr/local/bin/syncctl start "+localuser+'_'+task_id
             cron = cron + 'm'
-        f = open("./cron/"+localuser+'_'+task_id+".cron", "w", encoding="utf-8")
-        # MAIL_HOST is an env variable used by perl/imapsync 
-        f.write('MAIL_HOST='+os.environ['MAIL_HOST']+"\n")
-        f.write(cron_env+"\n")
-        f.close()
 
     foldersynchronization = "inbox"
     folder_inbox = "--folder\ 'INBOX'"
@@ -128,7 +125,7 @@ EXPUNGE_REMOTE={expunge_remote}
 CRON={cron}
 FOLDER_INBOX={folder_inbox}
 FOLDERSYNCHRONIZATION={foldersynchronization}
-    """
+"""
     os.umask(0o77)
 
     f = open("./imapsync/"+localuser+'_'+task_id+".env", "w", encoding="utf-8")
