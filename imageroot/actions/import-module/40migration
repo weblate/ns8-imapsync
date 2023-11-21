@@ -132,7 +132,7 @@ EXPUNGE_REMOTE={expunge_remote}
 CRON={cron}
 FOLDER_INBOX={folder_inbox}
 FOLDERSYNCHRONIZATION={foldersynchronization}
-    """
+"""
     os.umask(0o77)
 
     f = open("./imapsync/"+localuser+'_'+task_id+".env", "w", encoding="utf-8")
