@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2023 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+
+# This script expands cron tasks based on environment files.
+# It reads environment files in the 'imapsync' directory, extracts relevant information,
+# and generates corresponding cron files in the 'cron' directory.
+
+
+
+import agent
+import glob
+import os
+
+for file in glob.iglob("cron/*.cron"):
+    os.remove(file)
+
+env_files = list(glob.iglob("imapsync/*.env"))
+for task_id in env_files:
+    task_id = task_id.removesuffix('.env').removeprefix('imapsync/')
+    data = agent.read_envfile('imapsync/'+task_id+'.env')
+    if data['CRON'] != '':
+        if '1h' in data['CRON']:
+            cron_env = "1 */"+data['CRON'].replace('h','')+" * * *  root /usr/local/bin/syncctl start "+data['LOCALUSER']+'_'+data['TASK_ID']
+        elif 'm' in data['CRON']:
+            cron_env = "*/"+data['CRON'].replace('m','')+" * * * * root /usr/local/bin/syncctl start "+data['LOCALUSER']+'_'+data['TASK_ID']
+        f = open("./cron/"+data['LOCALUSER']+'_'+data['TASK_ID']+".cron", "w", encoding="utf-8")
+        # MAIL_HOST is an env variable used by perl/imapsync
+        # env of the cron !== env of the service
+        f.write('MAIL_HOST='+os.environ['MAIL_HOST']+"\n")
+        f.write(cron_env+"\n")
+        f.close()
