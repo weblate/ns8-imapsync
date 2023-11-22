@@ -63,8 +63,8 @@ for properties in getmail_properties:
     # convert getmail protocol to imapsync protocol
     if properties['Retriever'] == "SimplePOP3Retriever":
         remoteport = "143"
-        security = ""
-        # Pop3 to IMAP not sure it will work, we disable
+        security = "--tls1"
+        # Pop3 to IMAP STARTTLS not sure it will work, we disable
         cron = ""
     elif properties['Retriever'] == "SimplePOP3SSLRetriever":
         remoteport = "993"
@@ -73,7 +73,8 @@ for properties in getmail_properties:
         cron = ""
     elif properties['Retriever'] == "SimpleIMAPRetriever":
         remoteport = '143'
-        security = ''
+        # IMAP to IMAP STARTTLS
+        security = '--tls1'
         cron = properties['Time']
     elif properties['Retriever'] == "SimpleIMAPSSLRetriever":
         remoteport = '993'
