@@ -54,8 +54,21 @@ if data.get("exclude",'') == "":
 else:
     exclude = ","+ data.get("exclude",'')
 
-# Cron is expanded before the service start
+# Cron is expanded before the service start but manually each cron task is created now
 cron = data.get("cron","")
+if cron != "":
+    if 'h' in cron:
+        cron_env = "1 */"+cron.replace('h','')+" * * *  root /usr/local/bin/syncctl start "+localuser+'_'+task_id
+    elif 'm' in cron:
+        cron_env = "*/"+cron.replace('m','')+" * * * * root /usr/local/bin/syncctl start "+localuser+'_'+task_id
+    f = open("./cron/"+localuser+'_'+task_id+".cron", "w", encoding="utf-8")
+    # MAIL_HOST is an env variable used by perl/imapsync 
+    f.write('MAIL_HOST='+os.environ['MAIL_HOST']+"\n")
+    f.write(cron_env+"\n")
+    f.close()
+# cron does not exist we remove or ignore
+elif cron == "" and os.path.exists("./cron/"+localuser+'_'+task_id+".cron"):
+    os.remove("./cron/"+localuser+'_'+task_id+".cron")
 
 # folder synchronization
 foldersynchronization = data.get("foldersynchronization","all")
