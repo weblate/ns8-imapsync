@@ -26,6 +26,10 @@ elif 'SSL connect attempt failed' in result.stdout:
     agent.set_status('validation-failed')
     json.dump([{'field':'createTask','parameter':'createTask','value':'SSL_encryption_error','error':'SSL_encryption_error'}],fp=sys.stdout, default=str)
     sys.exit(4)
+elif 'ERR_EXIT_TLS_FAILURE' in result.stdout:
+    agent.set_status('validation-failed')
+    json.dump([{'field':'createTask','parameter':'createTask','value':'STARTTLS_not_allowed_use_IMAPS','error':'STARTTLS_not_allowed_use_IMAPS'}],fp=sys.stdout, default=str)
+    sys.exit(4)
 elif 'ERR_CONNECTION_FAILURE_HOST1' in result.stdout:
     agent.set_status('validation-failed')
     json.dump([{'field':'createTask','parameter':'createTask','value':'Check_hostname_or_tcp_port','error':'Check_hostname_or_tcp_port'}],fp=sys.stdout, default=str)
