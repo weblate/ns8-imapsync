@@ -3,8 +3,8 @@
         "required": "Obbligatorio",
         "processing": "Elaborazione in corso...",
         "work_in_progress": "In lavorazione",
-        "save": "Save",
-        "cancel": "Cancel"
+        "save": "Salva",
+        "cancel": "Annulla"
     },
     "status": {
         "node": "Nodo",
