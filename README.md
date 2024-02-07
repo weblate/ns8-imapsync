@@ -210,25 +210,22 @@ in case of error you will have
 ```json
 {"status": false}
 ```
-## Custom scripts
+## custom scripts
 
-You can if needed add your custom scripts inside the container, for this purpose you have two volumes (included inside the backup system)
-- cron (/home/imapsync1/.config/state/cron)
-This folder is to store the cron file that end its name with `*.custom` (it must respect the following cron syntax), either you can add directly an imapsync command or start a script that you can store in the imapsync volume
-```
-1 */1 * * *  root /usr/bin/imapsync --host1 SOURCE_SERVER --user1 SOURCE_USERNAME --password1 SOURCE_PASSWORD --host2 DESTINATION_SERVER --user2 DESTINATION_USERNAME --password2 DESTINATION_PASSWORD
-```
+If necessary, you can add your custom scripts inside the container. To facilitate this, two volumes, included in the backup, 
+are mounted from their respective directories under the ./state module.
 
-or
+- `cron` (e.g. `/home/imapsync1/.config/state/cron`)
+  This folder is designated for storing cron files, each of which should end its name with `.custom`, while adhering to the cron syntax.
+  
+      1 */1 * * *  root /usr/bin/imapsync --host1 SOURCE_SERVER --user1 SOURCE_USERNAME --password1 SOURCE_PASSWORD --host2 DESTINATION_SERVER --user2 DESTINATION_USERNAME --password2 DESTINATION_PASSWORD
 
-```
-1 */1 * * *  root /etc/imapsync/script.custom
-```
+  Instead of directly add an imapsync command, you have the option to run a script, which can be stored in the `imapsync` volume.
 
-- imapsync (/home/imapsync1/.config/state/imapsync)
-here you can store the custom scripts (end it by `*.custom`) that will be executed by cron, the scripts must be executable by everybody
+      1 */1 * * *  root /etc/imapsync/script.custom
 
-
+- `imapsync` (e.g. `/home/imapsync1/.config/state/imapsync`)
+  In this location, you can store custom scripts (ending with `.custom`) intended for execution by cron. These scripts must be set to be executable by all users.
 
 ## troubleshot issues
 
