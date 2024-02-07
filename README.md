@@ -210,6 +210,24 @@ in case of error you will have
 ```json
 {"status": false}
 ```
+## Custom scripts
+
+You can if needed add your custom scripts inside the container, for this purpose you have two volumes (included inside the backup system)
+- cron (/home/imapsync1/.config/state/cron)
+This folder is to store the cron file that end its name with `*.custom` (it must respect the following cron syntax), either you can add directly an imapsync command or start a script that you can store in the imapsync volume
+```
+1 */1 * * *  root /usr/bin/imapsync --host1 SOURCE_SERVER --user1 SOURCE_USERNAME --password1 SOURCE_PASSWORD --host2 DESTINATION_SERVER --user2 DESTINATION_USERNAME --password2 DESTINATION_PASSWORD
+```
+
+or
+
+```
+1 */1 * * *  root /etc/imapsync/script.custom
+```
+
+- imapsync (/home/imapsync1/.config/state/imapsync)
+here you can store the custom scripts (end it by `*.custom`) that will be executed by cron, the scripts must be executable by everybody
+
 
 
 ## troubleshot issues
