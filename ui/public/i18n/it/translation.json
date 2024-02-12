@@ -19,7 +19,7 @@
         "app_images": "Immagine app|Immagini app",
         "app_instance": "Istanza app",
         "app_volumes": "Volume app|Volumi app",
-        "installation_node": "Nodo",
+        "installation_node": "Nodo di installazione",
         "mount": "Percorso di mount"
     },
     "settings": {
@@ -54,7 +54,7 @@
         "get-name": "Visualizza nome",
         "list-backup-repositories": "Elenca repository di backup",
         "list-backups": "Elenca backup",
-        "list-installed-modules": "Elenco moduli installati",
+        "list-installed-modules": "Elenca moduli installati",
         "start-task": "Start task",
         "Tasks_list_error": "Error on action list-tasks",
         "list-tasks": "List the tasks",
