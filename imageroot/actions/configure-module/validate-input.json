@@ -19,7 +19,8 @@
         "mail_host": {
             "type": "string",
             "description": "Host name for the remote account",
-            "format": "idn-hostname",
+            "format": "hostname",
+            "pattern": "\\.",
             "title": "mail_host"
         },
         "mail_server": {
