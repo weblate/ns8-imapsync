@@ -31,7 +31,9 @@
     "instance_configuration": "Configure Imapsync",
     "choose_mail_server": "Select a domain",
     "choose_the_mail_server_to_use": "Choose the mail server from which to retrieve users mailboxes",
-    "mail_server_is_not_valid": "This mail server is not valid"
+    "mail_server_is_not_valid": "This mail server is not valid",
+    "mail_host_pattern": "Must be a valid fully qualified domain name",
+    "mail_host_format": "Must be a valid fully qualified domain name"
   },
   "tasks": {
     "no_tasks": "No tasks configured",
