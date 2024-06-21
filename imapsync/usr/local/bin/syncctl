@@ -28,14 +28,14 @@ while IFS= read -r line; do
   # Ignore empty lines
   [ -z "$line" ] && continue
   # Export the variable
-  export "$line"
-done < /etc/imapsync/${task_id}.env
+  export "${line?}"
+done < "/etc/imapsync/${task_id}.env"
 
-if [[ "$action" == "start" ]]; then
+if [[ "${action}" == "start" ]]; then
 
-    if [[ $FOLDERSYNCHRONIZATION == "exclusion" ]];then
+    if [[ "${FOLDERSYNCHRONIZATION}" == "exclusion" ]];then
         # source breaks with `|`
-        exclude_regex=$(echo "$EXCLUDE" | tr ',' '|')
+        exclude_regex=$(echo "${EXCLUDE}" | tr ',' '|')
     fi
     if [[ "${REMOTEHOSTNAME}" == 'imap.gmail.com' ]]; then
         gmail='--gmail1'
@@ -49,9 +49,9 @@ if [[ "$action" == "start" ]]; then
         --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  "$gmail" \
         --host2 "${MAIL_HOST}"  --user2 "${LOCALUSER}*vmail" \
         --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
-        ${FOLDER_INBOX} --exclude "^Public$|^Shared$"${exclude_regex}"" > /proc/1/fd/1 2>&1
+        ${FOLDER_INBOX} --exclude '^Public$|^Shared$'"${exclude_regex}" > /proc/1/fd/1 2>&1
 
-elif [[ "$action" == "stop" ]];then
+elif [[ "${action}" == "stop" ]];then
     if [[ -f "/etc/imapsync/${task_id}.pid" ]]; then
         kill  "$(cat "/etc/imapsync/${task_id}.pid")"
         # it can take a long time to imapsync to fully stop
@@ -60,13 +60,13 @@ elif [[ "$action" == "stop" ]];then
         echo "Not Running"
     fi
 
-elif [[ "$action" == "status" ]];then
+elif [[ "${action}" == "status" ]];then
     if [[ -f "/etc/imapsync/${task_id}.pid" ]];then
         echo 'Running'
     else
         echo 'Stopped'
     fi
-elif [[ "$action" == "validation" ]];then
+elif [[ "${action}" == "validation" ]];then
      /usr/bin/imapsync  --nolog \
         --host1 "${REMOTEHOSTNAME}"  --user1 "${REMOTEUSERNAME}"  \
         --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  \
@@ -74,11 +74,11 @@ elif [[ "$action" == "validation" ]];then
         --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
         --justlogin --timeout 10
 
-elif [[ "$action" == "list-informations" ]]; then
+elif [[ "${action}" == "list-informations" ]]; then
 
-    if [[ $FOLDERSYNCHRONIZATION == "exclusion" ]];then
+    if [[ "${FOLDERSYNCHRONIZATION}" == "exclusion" ]];then
         # source breaks with `|`
-        exclude_regex=$(echo "$EXCLUDE" | tr ',' '|')
+        exclude_regex=$(echo "${EXCLUDE}" | tr ',' '|')
     fi
     if [[ "${REMOTEHOSTNAME}" == 'imap.gmail.com' ]]; then
         gmail='--gmail1'
@@ -90,5 +90,5 @@ elif [[ "$action" == "list-informations" ]]; then
     --passfile1 "/etc/imapsync/${task_id}.pwd" --port1 "${REMOTEPORT}" "${SECURITY}"  "$gmail" \
     --host2 "${MAIL_HOST}"  --user2 "${LOCALUSER}*vmail" \
     --port2 143 --tls2 --passfile2 /etc/imapsync/vmail.pwd \
-    ${FOLDER_INBOX} --exclude "^Public$|^Shared$"${exclude_regex}"" --justfoldersizes --timeout1 10
+    ${FOLDER_INBOX} --exclude '^Public$|^Shared$'"${exclude_regex}" --justfoldersizes --timeout1 10
 fi
