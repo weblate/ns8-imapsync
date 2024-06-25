@@ -7,7 +7,6 @@
 
 # Terminate on error
 set -e
-alpine_version=3.18.3
 # Prepare variables for later use
 images=()
 # The image will be pushed to GitHub container registry
@@ -15,7 +14,7 @@ repobase="${REPOBASE:-ghcr.io/nethserver}"
 
 #Create webtop-webapp container
 reponame="imapsync-binary"
-container=$(buildah from docker.io/library/alpine:${alpine_version})
+container=$(buildah from docker.io/library/alpine:3.18.3)
 buildah run "${container}" /bin/sh <<'EOF'
 set -e
 apk add --no-cache imapsync cronie
