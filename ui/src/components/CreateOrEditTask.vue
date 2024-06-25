@@ -131,6 +131,7 @@
             :label="$t('tasks.exclude_folder')"
             v-model.trim="task.exclude"
             ref="exclude"
+            :invalid-message="$t(error.exclude)"
             :placeholder="$t('tasks.write_one_exclusion_per_line')"
             :helper-text="$t('tasks.start_by^_and_end_by$')"
           >
@@ -242,6 +243,12 @@ export default {
       error: {
         enabled_mailboxe: "",
         createTask: "",
+        exclude: "",
+        localuser: "",
+        remoteusername: "",
+        remotepassword: "",
+        remotehostname: "",
+        remoteport: "",
       },
     };
   },
@@ -290,6 +297,17 @@ export default {
 
         if (isValidationOk) {
           this.focusElement("remoteport");
+        }
+        isValidationOk = false;
+      }
+      if (
+        this.task.foldersynchronization == "exclusion" &&
+        !this.task.exclude
+      ) {
+        this.error.exclude = "common.required";
+
+        if (isValidationOk) {
+          this.focusElement("exclude");
         }
         isValidationOk = false;
       }

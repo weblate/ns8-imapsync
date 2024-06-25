@@ -47,7 +47,6 @@
                         "remoteport": "143",
                         "security": "tls",
                         "delete_local": false,
-                        "delete_local": true,
                         "exclude": "",
                         "remotepassword": "password",
                         "cron": "1h"
