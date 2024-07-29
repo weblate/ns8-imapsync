@@ -26,7 +26,6 @@
         "save": "Salva",
         "title": "Impostazioni",
         "configure_instance": "Configura {instance}",
-        "test_field": "Campo di test",
         "mail_server_fqdn": "Server di posta",
         "configuring": "Configurazione",
         "instance_configuration": "Configura Imapsync",
@@ -67,7 +66,7 @@
         "create-task": "Create task"
     },
     "task": {
-        "cannot_create_task": "Impossibile eseguire task {action}"
+        "cannot_create_task": "Impossibile eseguire il task {action}"
     },
     "about": {
         "title": "Informazioni"
