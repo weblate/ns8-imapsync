@@ -72,21 +72,9 @@
             "minLength": 1
         },
         "remotepassword": {
-            "oneOf": [
-                {
-                    "type": "string",
-                    "title": "Remote Password",
-                    "description": "Password of the remote user",
-                    "minLength": 0,
-                    "maxLength": 0
-                },
-                {
-                    "type": "string",
-                    "title": "Remote Password",
-                    "description": "Password of the remote user",
-                    "minLength": 1
-                }
-            ]
+            "type": "string",
+            "title": "Remote Password",
+            "description": "Password of the remote user. If the string is empty, the password is not changed"
         },
         "remoteusername": {
             "type": "string",
