@@ -114,7 +114,8 @@
         "fetching_statistic_please_wait": "Waiting to retrieve statictics, please wait",
         "every_minutes": "Every {num} minutes",
         "configure_imapsync": "Go to the settings",
-        "STARTTLS_not_allowed_use_IMAPS": "STARTTLS is not allowed by the provider"
+        "STARTTLS_not_allowed_use_IMAPS": "STARTTLS is not allowed by the provider",
+        "unchanged_password_placeholder": "Unchanged"
     },
     "about": {
         "title": "About"

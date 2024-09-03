@@ -59,6 +59,9 @@
           :label="$t('tasks.remotepassword')"
           ref="remotepassword"
           :invalid-message="$t(error.remotepassword)"
+          :placeholder="
+            isEdit ? $t('tasks.unchanged_password_placeholder') : ''
+          "
         />
         <NsTextInput
           v-model.trim="task.remotehostname"
@@ -276,7 +279,7 @@ export default {
         }
         isValidationOk = false;
       }
-      if (!this.task.remotepassword) {
+      if (!this.task.remotepassword && !this.isEdit) {
         this.error.remotepassword = "common.required";
 
         if (isValidationOk) {

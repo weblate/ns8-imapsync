@@ -99,6 +99,7 @@ f = open("./imapsync/"+localuser+'_'+task_id+".env", "w", encoding="utf-8")
 f.write(user_env)
 f.close()
 
-f = open("./imapsync/"+localuser+'_'+task_id+".pwd", "w", encoding="utf-8")
-f.write(remotepassword)
-f.close()
+if remotepassword != "":
+    f = open("./imapsync/"+localuser+'_'+task_id+".pwd", "w", encoding="utf-8")
+    f.write(remotepassword)
+    f.close()
