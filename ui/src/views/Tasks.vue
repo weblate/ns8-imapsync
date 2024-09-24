@@ -138,11 +138,11 @@
                   </cv-data-table-cell>
                   <cv-data-table-cell>
                     {{
-                      row.cron === ""
+                      row.cron === "0"
                         ? $t("tasks.no_cron")
                         : row.cron === "1h"
-                        ?  parseInt(row.cron) + " " + $t("tasks.hour")
-                        :  parseInt(row.cron) + " " + $t("tasks.minutes")
+                        ? parseInt(row.cron) + " " + $t("tasks.hour")
+                        : parseInt(row.cron) + " " + $t("tasks.minutes")
                     }}
                   </cv-data-table-cell>
                   <cv-data-table-cell>
@@ -301,7 +301,7 @@ export default {
         security: "",
         delete: "no_delete",
         exclude: "",
-        cron: "",
+        cron: "5",
         foldersynchronization: "all",
       },
       loading: {
@@ -389,8 +389,21 @@ export default {
     listTasksCompleted(taskContext, taskResult) {
       let Config = taskResult.output;
       this.enabled_mailboxes = Config.enabled_mailboxes;
-
       Config.user_properties.forEach((task) => {
+        // Transform the cron value
+        let cronValue = task.cron;
+        let cron_enabled = false;
+        if (cronValue.endsWith("h")) {
+          cronValue = String(parseInt(cronValue) * 60); // Convert hours to minutes and ensure it's a string
+          cron_enabled = true;
+        } else if (cronValue.endsWith("m")) {
+          cronValue = String(parseInt(cronValue)); // Remove the 'm', keep the number, and ensure it's a string
+          cron_enabled = true;
+        } else {
+          cronValue = String(0); // Ensure it's a string if it's already in the desired format
+          cron_enabled = false;
+        }
+
         this.tasks.push({
           task_id: task.task_id,
           localuser: task.localuser,
@@ -405,12 +418,13 @@ export default {
             : task.delete_remote
             ? "delete_remote"
             : "no_delete",
-          cron: task.cron,
+          cron: cronValue, // Use the transformed cron value as a string
+          cron_enabled: cron_enabled,
           foldersynchronization: task.foldersynchronization,
           exclude: task.exclude
             .split(",")
             .filter((value) => value.trim() !== "")
-            .join("\n"), //filter empty values
+            .join("\n"), // Filter empty values
         });
       });
       this.check_tasks = this.tasks.length ? true : false;
@@ -445,7 +459,8 @@ export default {
       this.currentTask.security = "tls";
       this.currentTask.delete = "no_delete";
       this.currentTask.exclude = "";
-      this.currentTask.cron = "";
+      this.currentTask.cron_enabled = false;
+      this.currentTask.cron = "5";
       this.currentTask.foldersynchronization = "all";
       this.showCreateOrEditTask();
     },
