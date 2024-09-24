@@ -172,39 +172,25 @@
             v-model="task.delete"
           /> -->
         </cv-radio-group>
-        <cv-dropdown
-          :light="true"
-          class="max-dropdown-width"
-          :value="task.cron"
+        <NsSlider
           v-model="task.cron"
-          :up="false"
-          :inline="false"
-          :helper-text="$t('tasks.set_when_you_want_the_task_start')"
-          :hide-selected="false"
           :label="$t('tasks.select_your_cron')"
-        >
-          <cv-dropdown-item selected value="">{{
-            $t("tasks.no_cron")
-          }}</cv-dropdown-item>
-          <cv-dropdown-item value="5m">{{
-            $t("tasks.every_minutes", { num: 5 })
-          }}</cv-dropdown-item>
-          <cv-dropdown-item value="10m">{{
-            $t("tasks.every_minutes", { num: 10 })
-          }}</cv-dropdown-item>
-          <cv-dropdown-item value="15m">{{
-            $t("tasks.every_minutes", { num: 15 })
-          }}</cv-dropdown-item>
-          <cv-dropdown-item value="30m">{{
-            $t("tasks.every_minutes", { num: 30 })
-          }}</cv-dropdown-item>
-          <cv-dropdown-item value="45m">{{
-            $t("tasks.every_minutes", { num: 45 })
-          }}</cv-dropdown-item>
-          <cv-dropdown-item value="1h">{{
-            $t("tasks.every_minutes", { num: 60 })
-          }}</cv-dropdown-item>
-        </cv-dropdown>
+          min="1"
+          max="60"
+          step="1"
+          stepMultiplier="1"
+          minLabel=""
+          maxLabel=""
+          showUnlimited
+          :unlimitedLabel="$t('tasks.disabled')"
+          :limitedLabel="$t('tasks.enabled')"
+          :isUnlimited="!task.cron_enabled"
+          :invalidMessage="$t(error.cron)"
+          :disabled="loading.createTask"
+          :unitLabel="$t('tasks.minutes')"
+          @unlimited="task.cron_enabled = !$event"
+          class="mg-bottom-xlg"
+        />
       </cv-form>
       <cv-row v-if="error.createTask">
         <cv-column>
@@ -353,6 +339,14 @@ export default {
         `${taskAction}-completed-${eventId}`,
         this.setCreateTaskCompleted
       );
+      // modify cron value to be compatible with previous format ('',5m, 10m, 15m, 30m, 45m, 1h)
+      if (this.task.cron === "60" && this.task.cron_enabled) {
+        this.task.cron = "1h";
+      } else if (this.task.cron !== "0" && this.task.cron_enabled) {
+        this.task.cron = this.task.cron + "m";
+      } else if (!this.task.cron_enabled) {
+        this.task.cron = "";
+      }
       const res = await to(
         this.createModuleTaskForApp(this.instanceName, {
           action: taskAction,
