@@ -14,5 +14,6 @@ data = json.load(sys.stdin)
 task_id = data["task_id"]
 localuser = data["localuser"]
 
-for file in glob.iglob("imapsync/"+localuser+'_'+task_id+".*"):
+# remove the task cron/env/password/lock files
+for file in glob.iglob("*/"+localuser+'_'+task_id+".*"):
     os.remove(file)
