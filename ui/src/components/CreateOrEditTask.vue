@@ -41,6 +41,7 @@
           :invalid-message="$t(error.localuser)"
           tooltipAlignment="start"
           tooltipDirection="top"
+          :disabled="loading.createTask"
           ref="localuser"
         >
           <template slot="tooltip">
@@ -52,6 +53,7 @@
           :label="$t('tasks.remoteusername')"
           ref="remoteusername"
           :invalid-message="$t(error.remoteusername)"
+          :disabled="loading.createTask"
         />
         <NsTextInput
           v-model.trim="task.remotepassword"
@@ -62,6 +64,7 @@
           :placeholder="
             isEdit ? $t('tasks.unchanged_password_placeholder') : ''
           "
+          :disabled="loading.createTask"
         />
         <NsTextInput
           v-model.trim="task.remotehostname"
@@ -69,6 +72,7 @@
           placeholder="imap.domain.com"
           ref="remotehostname"
           :invalid-message="$t(error.remotehostname)"
+          :disabled="loading.createTask"
         />
         <NsTextInput
           v-model.trim="task.remoteport"
@@ -76,6 +80,7 @@
           :label="$t('tasks.remoteport')"
           ref="remoteport"
           :invalid-message="$t(error.remoteport)"
+          :disabled="loading.createTask"
         />
         <cv-dropdown
           :light="true"
@@ -87,6 +92,7 @@
           :helper-text="$t('tasks.encryption_depends_remote_server')"
           :hide-selected="false"
           :label="$t('tasks.select_your_encryption')"
+          :disabled="loading.createTask"
         >
           <cv-dropdown-item selected value="">{{
             $t("tasks.none")
@@ -114,18 +120,21 @@
             :label="$t('tasks.syncronize_all')"
             value="all"
             v-model="task.foldersynchronization"
+            :disabled="loading.createTask"
           />
           <cv-radio-button
             :name="'radio-group-foldersynchronization'"
             :label="$t('tasks.synchronize_only_INBOX')"
             value="inbox"
             v-model="task.foldersynchronization"
+            :disabled="loading.createTask"
           />
           <cv-radio-button
             :name="'radio-group-foldersynchronization'"
             :label="$t('tasks.syncronize_with_exclusion')"
             value="exclusion"
             v-model="task.foldersynchronization"
+            :disabled="loading.createTask"
           />
         </cv-radio-group>
         <template v-if="task.foldersynchronization == 'exclusion'">
@@ -137,6 +146,7 @@
             :invalid-message="$t(error.exclude)"
             :placeholder="$t('tasks.write_one_exclusion_per_line')"
             :helper-text="$t('tasks.start_by^_and_end_by$')"
+            :disabled="loading.createTask"
           >
           </cv-text-area>
         </template>
@@ -157,6 +167,7 @@
             :label="$t('tasks.no_deletion')"
             value="no_delete"
             v-model="task.delete"
+            :disabled="loading.createTask"
           />
 
           <cv-radio-button
@@ -164,6 +175,7 @@
             :label="$t('tasks.delete_on_remote')"
             value="delete_remote"
             v-model="task.delete"
+            :disabled="loading.createTask"
           />
           <!-- <cv-radio-button
             :name="'radio-group-delete_remote'"
