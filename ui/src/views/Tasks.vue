@@ -400,7 +400,7 @@ export default {
           cronValue = String(parseInt(cronValue)); // Remove the 'm', keep the number, and ensure it's a string
           cron_enabled = true;
         } else {
-          cronValue = String(0); // Ensure it's a string if it's already in the desired format
+          cronValue = "0";
           cron_enabled = false;
         }
 
