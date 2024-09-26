@@ -49,16 +49,7 @@
         "cron": {
             "type": "string",
             "title": "Cron task",
-            "description": "Start a task by a cron",
-            "enum": [
-                "",
-                "5m",
-                "10m",
-                "15m",
-                "30m",
-                "45m",
-                "1h"
-            ]
+            "description": "Start a task by a cron"
         },
         "task_id": {
             "type": "string",
