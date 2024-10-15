@@ -284,10 +284,8 @@ export default {
         this.cronEnabled = this.task.cron_enabled;
       } else {
         // hiding modal
-
-        if (this.isEditing) {
-          this.clearFields();
-        }
+        this.clearErrors();
+        this.clearFields();
       }
     },
   },
@@ -349,10 +347,7 @@ export default {
         }
         isValidationOk = false;
       }
-      if (
-        this.folderSynchronization == "exclusion" &&
-        !this.exclude
-      ) {
+      if (this.folderSynchronization == "exclusion" && !this.exclude) {
         this.error.exclude = "common.required";
 
         if (isValidationOk) {
@@ -455,6 +450,7 @@ export default {
     },
     onModalHidden() {
       this.clearErrors();
+      this.clearFields();
       this.$emit("hide");
     },
   },
